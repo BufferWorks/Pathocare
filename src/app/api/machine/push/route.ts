@@ -3,7 +3,7 @@ import connectDB from "@/lib/mongodb";
 import { Machine, Report, Booking, Test, Center } from "@/lib/models";
 
 /**
- * 🔗 PathoCare Node Push API
+ * 🔗 Pathocore Node Push API
  * This is the high-bandwidth endpoint used by the Local Middleware Bridge
  * to ingest clinical data from physical hardware.
  */

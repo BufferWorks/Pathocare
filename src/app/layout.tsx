@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PathoCare | Advanced Pathology Management System",
+  title: "Pathocore | Advanced Pathology Management System",
   description: "A comprehensive SaaS solution for pathology laboratories and diagnostic centers. Manage centers, tests, bookings, and reports with ease.",
 };
 

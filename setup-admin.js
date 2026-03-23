@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 async function setupAdmin() {
     await connectDB();
 
-    const adminEmail = "admin@pathocare.com";
+    const adminEmail = "admin@pathocore.com";
     const existingAdmin = await User.findOne({ email: adminEmail });
 
     if (existingAdmin) {
@@ -27,7 +27,7 @@ async function setupAdmin() {
     });
 
     console.log("Super Admin created successfully!");
-    console.log("Email: admin@pathocare.com");
+    console.log("Email: admin@pathocore.com");
     console.log("Password: admin123");
     process.exit(0);
 }

@@ -23,7 +23,7 @@ async function seed() {
     const users = [
         {
             name: "System Super Admin",
-            email: "superadmin@pathocare.com",
+            email: "superadmin@pathocore.com",
             password: "superpassword123",
             role: "SUPER_ADMIN",
             centerId: null
@@ -69,7 +69,7 @@ async function seed() {
     console.log("LOGIN CREDENTIALS PROVIDED:");
     console.log("------------------------------------------------");
     console.log("1. SUPER ADMIN (Full Software Access)");
-    console.log("   Email: superadmin@pathocare.com");
+    console.log("   Email: superadmin@pathocore.com");
     console.log("   Password: superpassword123");
     console.log("\n2. CENTER ADMIN (Branch Admin - Can change rates)");
     console.log("   Email: centeradmin@lifecare.com");

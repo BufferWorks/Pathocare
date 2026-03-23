@@ -11,7 +11,7 @@ export async function GET() {
 
         // 1. Create/Update Super Admin
         await User.findOneAndUpdate(
-            { email: "superadmin@pathocare.com" },
+            { email: "superadmin@pathocore.com" },
             { name: "Master Admin", password: hashedPassword, role: "SUPER_ADMIN" },
             { upsert: true }
         );
@@ -68,7 +68,7 @@ export async function GET() {
             status: "Multi-Center Matrix Seeded",
             centers: ["Metro Core Diagnostics", "Apex Clinical Node"],
             credentials: {
-                super: "superadmin@pathocare.com / demopass123",
+                super: "superadmin@pathocore.com / demopass123",
                 admin1: "admin1@lab.com / demopass123",
                 admin2: "admin2@lab.com / demopass123"
             }

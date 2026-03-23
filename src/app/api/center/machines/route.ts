@@ -106,7 +106,7 @@ export async function POST(req: Request) {
             port,
             centerId,
             isPaused: false,
-            secretKey: `PATHOCARE_NODE_${Math.random().toString(36).substring(2, 10).toUpperCase()}`, // Secure Token
+            secretKey: `Pathocore_NODE_${Math.random().toString(36).substring(2, 10).toUpperCase()}`, // Secure Token
             health: 100,
             lastSync: new Date()
         });

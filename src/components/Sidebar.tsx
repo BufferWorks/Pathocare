@@ -29,7 +29,7 @@ export function Sidebar() {
 
     const userRole = session?.user?.role || "STAFF";
     const userName = session?.user?.name || "System User";
-    const userEmail = session?.user?.email || "user@pathocare.com";
+    const userEmail = session?.user?.email || "user@pathocore.com";
 
     const adminLinks = [
         { label: "Dashboard", icon: <LayoutDashboard size={20} />, href: "/admin" },
@@ -67,7 +67,7 @@ export function Sidebar() {
                 </div>
                 <div>
                     <h1 className="text-2xl font-black text-white tracking-tighter leading-tight flex items-center">
-                        PathoCare<span className="text-primary">.</span>
+                        Pathocore<span className="text-primary">.</span>
                     </h1>
                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Enterprise SaaS</p>
                 </div>

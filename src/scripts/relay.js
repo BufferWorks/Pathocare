@@ -1,5 +1,5 @@
 /**
- * 🛰️ PathoCare Neural Relay Node (v3.1 - Forensic Data Extraction & Live Stream)
+ * 🛰️ Pathocore Neural Relay Node (v3.1 - Forensic Data Extraction & Live Stream)
  * --------------------------------------------------------------------------
  * High-performance autonomous bridge for diagnostic hardware.
  * Upgraded with Cloud Terminal Streaming for real-time monitoring.

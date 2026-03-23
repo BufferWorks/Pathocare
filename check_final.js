@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 async function run() {
-  await mongoose.connect('mongodb+srv://abhinav2003singh16_db_user:IPA5D3H0PKyMSIVG@pathology.gihxkmm.mongodb.net/pathocare?appName=pathology');
+  await mongoose.connect('mongodb+srv://abhinav2003singh16_db_user:IPA5D3H0PKyMSIVG@pathology.gihxkmm.mongodb.net/pathocore?appName=pathology');
   const db = mongoose.connection;
   
   const Booking = db.collection('bookings');

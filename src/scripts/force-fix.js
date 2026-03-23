@@ -32,7 +32,7 @@ const Notification = mongoose.models.Notification || mongoose.model("Notificatio
 
 async function fix() {
     try {
-        await mongoose.connect("mongodb+srv://abhinav2003singh16_db_user:IPA5D3H0PKyMSIVG@pathology.gihxkmm.mongodb.net/pathocare?appName=pathology");
+        await mongoose.connect("mongodb+srv://abhinav2003singh16_db_user:IPA5D3H0PKyMSIVG@pathology.gihxkmm.mongodb.net/pathocore?appName=pathology");
         console.log("Connected to MongoDB Matrix");
 
         // 1. Force Activate ALL Centers & Reset Expiry
@@ -67,11 +67,11 @@ async function fix() {
         }
 
         // 4. Create Initial Notifications
-        await Notification.deleteMany({ title: { $in: ["New Center Onboarded", "Revenue Payout Processing", "Security Protocols Active", "Welcome to PathoCare Matrix"] } });
+        await Notification.deleteMany({ title: { $in: ["New Center Onboarded", "Revenue Payout Processing", "Security Protocols Active", "Welcome to Pathocore Matrix"] } });
 
         await Notification.create([
             {
-                title: "Welcome to PathoCare Matrix",
+                title: "Welcome to Pathocore Matrix",
                 description: "System calibration complete. All nodes are now functional and synchronized.",
                 type: "success",
                 icon: "CheckCircle",

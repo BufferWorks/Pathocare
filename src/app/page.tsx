@@ -168,7 +168,7 @@ export default function Home() {
 
           <h2 className="text-4xl font-bold mb-6">Ready to modernize your laboratory?</h2>
           <p className="text-lg text-secondary max-w-xl mx-auto mb-10">
-            Join 100+ pathology centers that have transformed their diagnostic operations with PathoCare.
+            Join 100+ pathology centers that have transformed their diagnostic operations with Pathocore.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/auth/login" className="w-full sm:w-auto">
@@ -183,9 +183,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex items-center gap-2">
             <Activity className="text-primary w-6 h-6" />
-            <span className="text-lg font-bold tracking-tight">PathoCare</span>
+            <span className="text-lg font-bold tracking-tight">Pathocore</span>
           </div>
-          <p className="text-sm text-secondary">© 2026 PathoCare Systems Inc. All rights reserved.</p>
+          <p className="text-sm text-secondary">© 2026 Pathocore Systems Inc. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="#" className="text-sm text-secondary hover:text-primary transition-colors">Privacy</Link>
             <Link href="#" className="text-sm text-secondary hover:text-primary transition-colors">Terms</Link>

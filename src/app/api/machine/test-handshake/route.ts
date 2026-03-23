@@ -3,7 +3,7 @@ import connectDB from "@/lib/mongodb";
 import { Machine, Booking, Report, Test } from "@/lib/models";
 
 /**
- * 🧪 PathoCare Neural Handshake Simulator
+ * 🧪 Pathocore Neural Handshake Simulator
  * This endpoint allows developers to simulate a physical machine connection.
  * It provides the exact CURL commands and Payload structure required for 
  * any lab analyzer (Hematology, Biochemistry, etc.) to bridge with the cloud.

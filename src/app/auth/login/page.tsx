@@ -76,7 +76,7 @@ function LoginForm() {
                             <Activity className="text-primary w-8 h-8" />
                         </div>
                         <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome Back</h1>
-                        <p className="text-secondary text-sm">Enter your credentials to access PathoCare</p>
+                        <p className="text-secondary text-sm">Enter your credentials to access Pathocore</p>
                     </div>
 
                     {error && (

@@ -115,7 +115,7 @@ export default function IntegrationSettingsPage() {
         // Clinical ANSI Decoder: Translates hardware stdout colors to web-safe CSS
         const parts = text.split(/(\x1b\[\d+m)/g);
         return parts.map((part, i) => {
-            if (part === "\x1b[32m") return <span key={i} className="text-emerald-400 font-black">pathocare@node ~ % </span>;
+            if (part === "\x1b[32m") return <span key={i} className="text-emerald-400 font-black">pathocore@node ~ % </span>;
             if (part === "\x1b[31m") return <span key={i} className="text-red-500 font-bold">error: </span>;
             if (part === "\x1b[33m") return <span key={i} className="text-amber-400 italic">SYSTEM: </span>;
             if (part === "\x1b[35m") return <span key={i} className="text-purple-400 font-black">HANDSHAKE: </span>;
@@ -358,7 +358,7 @@ export default function IntegrationSettingsPage() {
         const cmd = terminalInput.trim();
         if (!cmd) return;
 
-        addLog(`\x1b[32mpathocare@node ~ % \x1b[0m ${cmd}`);
+        addLog(`\x1b[32mpathocore@node ~ % \x1b[0m ${cmd}`);
         setCommandHistory(prev => [cmd, ...prev]);
         setTerminalInput("");
         setHistoryIndex(-1);
@@ -603,7 +603,7 @@ export default function IntegrationSettingsPage() {
     };
 
     const tripleLockedDelete = (node: any) => {
-        const step1 = confirm(`⚠️ [STEP 1/3] WARNING: You are initiating a TERMINATION SEQUENCE for ${node.name}. This will break the digital link between the machine and PathoCare. Continue?`);
+        const step1 = confirm(`⚠️ [STEP 1/3] WARNING: You are initiating a TERMINATION SEQUENCE for ${node.name}. This will break the digital link between the machine and Pathocore. Continue?`);
         if (!step1) return;
 
         const step2 = confirm(`🚨 [STEP 2/3] CRITICAL ACTION: Deleting this node will STOP all automated result transfers for this analyzer. Technicians will have to enter results manually. Are you absolutely sure?`);
@@ -813,7 +813,7 @@ export default function IntegrationSettingsPage() {
                                         <h4 className="text-white text-xl font-black uppercase italic tracking-tight">Middleware Edge Credentials</h4>
                                     </div>
                                     <p className="text-white/50 text-[10px] uppercase font-bold tracking-widest leading-relaxed mb-6">
-                                        Input these core authenticated identities into your <span className="text-emerald-400">PathoCare Local Agent Dashboard</span>. These keys authorize secure telemetry streams to the cloud matrix.
+                                        Input these core authenticated identities into your <span className="text-emerald-400">Pathocore Local Agent Dashboard</span>. These keys authorize secure telemetry streams to the cloud matrix.
                                     </p>
                                     
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -849,7 +849,7 @@ export default function IntegrationSettingsPage() {
                                         "VECTOR_SYNC_V2: M_CELL_COUNTER_176 >> Success",
                                         "HEURISTIC_PACKET_RECEIVED: HL7_2.5_NODE_1DAC >> Ingested",
                                         "NEURAL_PULSE: DB_LATENCY_12ms >> Optimal",
-                                        "AUTH_BRIDGE: PATHOCARE_MIDDLEWARE_V2.0 >> Active",
+                                        "AUTH_BRIDGE: Pathocore_MIDDLEWARE_V2.0 >> Active",
                                         "HEMOGLOBIN_STREAM: SYSMEX_XN >> Validated",
                                         "REAGENT_SYNC: LOG_77A >> Status_OK",
                                         "QUANTUM_ENCRYPTION_LAYER >> Verified",
@@ -1014,7 +1014,7 @@ export default function IntegrationSettingsPage() {
                     <h4 className="text-3xl font-black italic uppercase tracking-tighter text-slate-900 dark:text-white">Unified Laboratory Link</h4>
                     <p className="text-slate-500 text-sm font-medium leading-relaxed uppercase tracking-wider text-[10px]">
                         Hardware scaling and node provisioning is restricted to the Master Network Account.
-                        Contact PathoCare Enterprise Support to activate new machine clusters for this center.
+                        Contact Pathocore Enterprise Support to activate new machine clusters for this center.
                     </p>
                 </div>
                 {isSuperAdmin && (
