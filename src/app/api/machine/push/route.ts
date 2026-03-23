@@ -114,7 +114,7 @@ export async function POST(req: Request) {
         const machineToTestIdMap: any = {};
         booking.tests.forEach((t: any) => {
             const lowName = t.name.toLowerCase();
-            const acronym = lowName.replace(/[^a-z\s]/gi, '').split(/\s+/).map(w => w[0]).join('');
+            const acronym = lowName.replace(/[^a-z\s]/gi, '').split(/\s+/).map((w: string) => w[0]).join('');
             const tid = t._id.toString();
             
             machineToTestIdMap[lowName] = tid; 
