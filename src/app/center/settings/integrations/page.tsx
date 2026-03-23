@@ -294,7 +294,7 @@ export default function IntegrationSettingsPage() {
                     if (authorizedPorts.length > 0) {
                         addLog("PERSISTENCE_DETECTED: Attempting automated handshake...");
                         // We take the first active node as the target
-                        connectToMachine(nodes[0], authorizedPorts[0]);
+                        connectToMachine(nodes[0]);
                     }
                 } catch (err) {
                     console.log("AUTO_RESUME_SKIPPED");

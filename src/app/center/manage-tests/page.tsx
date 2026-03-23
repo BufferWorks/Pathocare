@@ -352,7 +352,6 @@ export default function InvestigationHubPage() {
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
-                               transition={{ delay: i * 0.05 }}
                                 className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden"
                             >
                                 <div className="flex flex-col items-start gap-3 mb-5 pb-5 border-b border-slate-50 dark:border-slate-800">
