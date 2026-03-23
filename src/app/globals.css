@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+}
+
+:root {
+  /* PREMIUM MINT GREEN MEDICAL THEME */
+  --background: #f8faf9;
+  --foreground: #092c24;
+
+  --primary: #10b981;
+  /* Emerald 500 */
+  --primary-foreground: #ffffff;
+
+  --secondary: #475569;
+  --accent: #d1fae5;
+  /* Emerald 100 */
+
+  --card: #ffffff;
+  --card-foreground: #092c24;
+
+  --border: #e2e8f0;
+
+  --font-geist-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #04100d;
+    --foreground: #ecfdf5;
+
+    --primary: #10b981;
+    --primary-foreground: #ffffff;
+
+    --secondary: #94a3b8;
+    --accent: #064e3b;
+
+    --card: #081a16;
+    --card-foreground: #ecfdf5;
+
+    --border: #132e27;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.dark .glass {
+  background: rgba(8, 26, 22, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #10b98144;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10b98188;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Utility Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }

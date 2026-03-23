@@ -6,12 +6,29 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "relay": "node src/scripts/relay.js"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.11.1",
+    "@hookform/resolvers": "^5.2.2",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.3.1",
+    "framer-motion": "^12.34.5",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.0",
+    "lucide-react": "^0.576.0",
+    "luxon": "^3.7.2",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.2.3",
     "next": "16.1.6",
+    "next-auth": "^4.24.13",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.2",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
