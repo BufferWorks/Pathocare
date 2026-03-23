@@ -128,11 +128,11 @@ export async function POST(req: Request) {
             
             // 1. Direct/Acronym Map
             if (machineToTestIdMap[pStr]) return machineToTestIdMap[pStr];
-            const acronym = pStr.replace(/[^a-z\s]/gi, '').split(/\s+/).map(w => w[0]).join('');
+            const acronym = pStr.replace(/[^a-z\s]/gi, '').split(/\s+/).map((w: string) => w[0]).join('');
             if (machineToTestIdMap[acronym]) return machineToTestIdMap[acronym];
             
             // 2. Substring Match against booking tests
-            for (let t of booking.tests) {
+            for (let t of (booking.tests as any[])) {
                const tn = t.name.toLowerCase();
                if (pStr.includes(tn) || tn.includes(pStr)) return t._id.toString();
             }
