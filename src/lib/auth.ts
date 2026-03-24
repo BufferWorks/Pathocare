@@ -42,6 +42,8 @@ export const authOptions: NextAuthOptions = {
                         }
                     }
 
+                    console.log(`[AUTH] Authorize Success: ID=${user._id}, Role=${user.role}, Center=${user.centerId || 'NONE'}`);
+
                     return {
                         id: user._id.toString(),
                         email: user.email,

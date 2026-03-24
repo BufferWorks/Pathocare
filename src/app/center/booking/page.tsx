@@ -163,21 +163,30 @@ export default function PatientBookingPage() {
                     fetch("/api/doctors")
                 ]);
 
+                // Defensive check: Only parse if OK, else default to empty
+                const testsData = testsRes.ok ? await testsRes.json() : [];
+                const packagesData = packagesRes.ok ? await packagesRes.json() : [];
+                const doctorsData = doctorsRes.ok ? await doctorsRes.json() : [];
+
+                setAvailableTests(Array.isArray(testsData) ? testsData : []);
+                setAvailablePackages(Array.isArray(packagesData) ? packagesData : []);
+                setDoctors(Array.isArray(doctorsData) ? doctorsData : []);
+
                 if (session?.user?.centerId) {
                     const panelsRes = await fetch(`/api/center/panels?centerId=${session.user.centerId}`);
-                    const panelsData = await panelsRes.json();
-                    setPanels(Array.isArray(panelsData) ? panelsData : []);
+                    if (panelsRes.ok) {
+                        const panelsData = await panelsRes.json();
+                        setPanels(Array.isArray(panelsData) ? panelsData : []);
+                    } else {
+                        setPanels([]);
+                    }
                 }
-
-                const testsData = await testsRes.json();
-                const packagesData = await packagesRes.json();
-                const doctorsData = await doctorsRes.json();
-
-                setAvailableTests(testsData);
-                setAvailablePackages(packagesData);
-                setDoctors(doctorsData);
             } catch (err) {
                 console.error("Fetch failed", err);
+                setAvailableTests([]);
+                setAvailablePackages([]);
+                setDoctors([]);
+                setPanels([]);
             } finally {
                 setLoading(false);
             }
@@ -185,8 +194,8 @@ export default function PatientBookingPage() {
         fetchData();
     }, [session?.user?.centerId]);
 
-    const grossTotal = selectedTests.reduce((sum, t) => sum + (t.price || 0), 0) +
-        selectedPackages.reduce((sum, p) => sum + (p.price || 0), 0);
+    const grossTotal = (Array.isArray(selectedTests) ? selectedTests : []).reduce((sum, t) => sum + (t.price || 0), 0) +
+        (Array.isArray(selectedPackages) ? selectedPackages : []).reduce((sum, p) => sum + (p.price || 0), 0);
     const netTotal = Math.max(0, grossTotal - (Number(discount) || 0));
     const balance = Math.max(0, netTotal - (Number(paidAmount) || 0));
 
@@ -584,11 +593,14 @@ export default function PatientBookingPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-h-[50vh] xl:max-h-none overflow-y-auto pr-2 custom-scrollbar">
                                 {(() => {
+                                    const safeTests = Array.isArray(availableTests) ? availableTests : [];
+                                    const safePackages = Array.isArray(availablePackages) ? availablePackages : [];
+
                                     const combined = tab === "All"
-                                        ? [...availableTests.map(t => ({ ...t, itemType: "test" })), ...availablePackages.map(p => ({ ...p, itemType: "package" }))]
+                                        ? [...safeTests.map((t: any) => ({ ...t, itemType: "test" })), ...safePackages.map((p: any) => ({ ...p, itemType: "package" }))]
                                         : tab === "Tests"
-                                            ? availableTests.map(t => ({ ...t, itemType: "test" }))
-                                            : availablePackages.map(p => ({ ...p, itemType: "package" }));
+                                            ? safeTests.map((t: any) => ({ ...t, itemType: "test" }))
+                                            : safePackages.map((p: any) => ({ ...p, itemType: "package" }));
 
                                     const filtered = combined.filter((item: any) => {
                                         const query = searchTerm.toLowerCase();
