@@ -1,13 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-    throw new Error("MONGODB_URI is not defined in .env.local!");
-} else {
-    console.log("MONGODB: URI detected (masked):", MONGODB_URI.substring(0, 15) + "..." + (MONGODB_URI.split('@')[1] || ""));
-}
-
 let cached = (global as any).mongoose;
 
 if (!cached) {
@@ -15,6 +7,19 @@ if (!cached) {
 }
 
 async function connectDB() {
+    const MONGODB_URI = process.env.MONGODB_URI;
+
+    // ✅ Lazy runtime check
+    if (!MONGODB_URI) {
+        throw new Error("MONGODB_URI is not defined");
+    }
+
+    // Optional debug (safe logging)
+    console.log(
+        "MONGODB: URI detected (masked):",
+        MONGODB_URI.substring(0, 15) + "..." + (MONGODB_URI.split('@')[1] || "")
+    );
+
     if (cached.conn) {
         return cached.conn;
     }
@@ -26,14 +31,18 @@ async function connectDB() {
         };
 
         console.log("MONGODB: Initializing new connection...");
-        cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-            console.log("MONGODB: Connection established.");
-            return mongoose;
-        }).catch(err => {
-            console.error("MONGODB: Connection failed:", err.message);
-            throw err;
-        });
+
+        cached.promise = mongoose.connect(MONGODB_URI, opts)
+            .then((mongoose) => {
+                console.log("MONGODB: Connection established.");
+                return mongoose;
+            })
+            .catch(err => {
+                console.error("MONGODB: Connection failed:", err.message);
+                throw err;
+            });
     }
+
     cached.conn = await cached.promise;
     return cached.conn;
 }
