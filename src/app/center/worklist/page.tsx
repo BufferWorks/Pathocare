@@ -136,6 +136,10 @@ export default function WorklistPage() {
         window.print();
     };
 
+    const handlePrintBarcode = () => {
+        window.print();
+    };
+
     const fetchWorklist = async () => {
         try {
             if (!session?.user?.centerId) return;
@@ -1016,13 +1020,19 @@ export default function WorklistPage() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-3 gap-4">
                                     <Button
                                         onClick={() => setPrintingBarcode(null)}
                                         variant="outline"
                                         className="h-14 rounded-2xl font-black uppercase tracking-widest italic"
                                     >
                                         Close
+                                    </Button>
+                                    <Button
+                                        onClick={handlePrintBarcode}
+                                        className="h-14 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest italic flex items-center justify-center gap-2 hover:scale-105 transition-all shadow-xl"
+                                    >
+                                        <Printer size={18} /> Print
                                     </Button>
                                     <Button
                                         onClick={handleDownloadBarcode}
@@ -1035,6 +1045,50 @@ export default function WorklistPage() {
                         </motion.div>
                     )
                 }
+
+                {/* PRINT-ONLY BARCODE CONTAINER (Hidden in UI) */}
+                <div className="hidden print:block fixed inset-0 bg-white z-[9999]">
+                    {printingBarcode && (
+                        <div className="flex items-center justify-center h-full">
+                            <div className="bg-white p-2 flex flex-col items-center justify-center space-y-1 w-[50mm] h-[25mm]">
+                                <div className="w-full flex justify-between items-center text-[8px] font-black uppercase text-black leading-none">
+                                    <p>Date: {new Date(printingBarcode.bookingDate).toLocaleDateString('en-GB')}</p>
+                                    <p>{printingBarcode.age}Y/{printingBarcode.gender?.charAt(0)}</p>
+                                </div>
+                                <svg viewBox="0 0 400 60" className="w-[45mm] h-[12mm]" preserveAspectRatio="none" shapeRendering="crispEdges">
+                                    <g fill="#000">
+                                        {generateCode39(printingBarcode.barcode || "LAB")}
+                                    </g>
+                                </svg>
+                                <div className="w-full text-center">
+                                    <p className="text-[10px] font-black uppercase text-black leading-none">
+                                        {printingBarcode._id.slice(-3).toUpperCase()} {printingBarcode.patientName} / {printingBarcode.barcode}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <style jsx global>{`
+                    @media print {
+                        body * {
+                            visibility: hidden !important;
+                        }
+                        .print\\:block, .print\\:block * {
+                            visibility: visible !important;
+                            position: fixed !important;
+                            left: 0 !important;
+                            top: 0 !important;
+                            width: 100% !important;
+                            height: 100% !important;
+                            background: white !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                        }
+                    }
+                `}</style>
             </AnimatePresence >
         </div >
     );
