@@ -218,8 +218,8 @@ export async function POST(req: Request) {
                             const otherTidStr = (res.testId?._id || res.testId || "").toString();
                             if (otherTidStr !== tidStr) {
                                 // Check if this parameter name exists in the template of the OTHER test
-                                const otherTestTemplate = booking.tests.find((bt: any) => bt._id.toString() === otherTidStr);
-                                const isAllowedInOtherTest = otherTestTemplate?.parameters?.some((p: any) => p.name.toLowerCase() === incomingName);
+                                const otherTestTemplate = (booking.tests as any[]).find((bt: any) => bt._id.toString() === otherTidStr);
+                                const isAllowedInOtherTest = (otherTestTemplate as any)?.parameters?.some((p: any) => p.name.toLowerCase() === incomingName);
 
                                 if (!isAllowedInOtherTest) {
                                     res.parameterResults = res.parameterResults.filter(
@@ -258,11 +258,11 @@ export async function POST(req: Request) {
             for (const tId of Array.from(seenTests)) {
                 try {
                     const masterTest = await Test.findById(tId);
-                    if (masterTest && (!masterTest.parameters || masterTest.parameters.length === 0)) {
+                    if (masterTest && (!(masterTest as any).parameters || (masterTest as any).parameters.length === 0)) {
                         const reportTest = report.results.find((r: any) => (r.testId?._id || r.testId || "").toString() === tId);
                         if (reportTest && reportTest.parameterResults.length > 0) {
                             console.log(`🧠 SELF-LEARNING: Updating template for ${masterTest.name}`);
-                            masterTest.parameters = reportTest.parameterResults.map((p: any) => ({
+                            (masterTest as any).parameters = reportTest.parameterResults.map((p: any) => ({
                                 name: p.name,
                                 unit: p.unit || "",
                                 normalRange: p.normalRange || ""
