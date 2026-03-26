@@ -32,15 +32,15 @@ export async function POST(req: Request) {
         // 1. Auto-generate Barcode if not provided
         let barcode = data.barcode;
         if (!barcode || barcode.trim() === "") {
-            // Generate unique 8-char identifier: PC-[6 random chars]
+            // Generate unique 7-char identifier (Removed PC- prefix)
             const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Avoid ambiguous O, 0, I, 1
             let isUnique = false;
             while (!isUnique) {
                 let random = "";
-                for (let i = 0; i < 6; i++) {
+                for (let i = 0; i < 7; i++) {
                     random += chars.charAt(Math.floor(Math.random() * chars.length));
                 }
-                barcode = `PC-${random}`;
+                barcode = random;
                 const existing = await Booking.findOne({ barcode });
                 if (!existing) isUnique = true;
             }
