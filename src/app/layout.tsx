@@ -16,7 +16,11 @@ export const metadata: Metadata = {
   title: "Pathocore | Advanced Pathology Management System",
   description: "A comprehensive SaaS solution for pathology laboratories and diagnostic centers. Manage centers, tests, bookings, and reports with ease.",
   icons: {
-    icon: "/favicon.png",
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/favicon.png",
   },
 };
