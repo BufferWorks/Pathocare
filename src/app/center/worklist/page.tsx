@@ -21,8 +21,10 @@ import {
     Zap,
     Share2,
     Pencil,
-    X
+    X,
+    Download
 } from "lucide-react";
+import html2canvas from "html2canvas";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -59,6 +61,53 @@ export default function WorklistPage() {
     const [auditLoading, setAuditLoading] = useState(false);
     const [editingBooking, setEditingBooking] = useState<any>(null);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [printingBarcode, setPrintingBarcode] = useState<any>(null);
+
+    const generateCode39 = (data: string) => {
+        const patterns: any = {
+            '0': '111221211', '1': '211211112', '2': '112211112', '3': '212211111',
+            '4': '111221112', '5': '211221111', '6': '112221111', '7': '111211212',
+            '8': '211211211', '9': '112211211', 'A': '211112112', 'B': '112112112',
+            'C': '212112111', 'D': '111122112', 'E': '211122111', 'F': '112122111',
+            'G': '111112212', 'H': '211112211', 'I': '112112211', 'J': '111122211',
+            'K': '211111122', 'L': '112111122', 'M': '212111121', 'N': '111121122',
+            'O': '211121121', 'P': '112121121', 'Q': '111111222', 'R': '211111221',
+            'S': '112111221', 'T': '111121221', 'U': '221111112', 'V': '122111112',
+            'W': '222111111', 'X': '121121112', 'Y': '221121111', 'Z': '122121111',
+            '-': '121111212', '.': '221111211', ' ': '122111211', '*': '121121211'
+        };
+        const fullText = `*${(data || "LAB").toUpperCase()}*`;
+        let x = 0;
+        const narrow = 2;
+        const wide = 5;
+
+        return fullText.split('').map((char, charIdx) => {
+            const pattern = patterns[char] || patterns['-'];
+            const bars = pattern.split('').map((p: string, i: number) => {
+                const isBar = i % 2 === 0;
+                const width = p === '1' ? narrow : wide;
+                const currentX = x;
+                x += width;
+                return isBar ? <rect key={`${charIdx}-${i}`} x={currentX} y="0" width={width} height="60" /> : null;
+            });
+            x += narrow;
+            return <g key={charIdx}>{bars}</g>;
+        });
+    };
+
+    const handleDownloadBarcode = async () => {
+        const element = document.getElementById("barcode-download-area");
+        if (!element) return;
+        try {
+            const canvas = await html2canvas(element, { scale: 3, backgroundColor: "#ffffff" });
+            const link = document.createElement("a");
+            link.download = `barcode-${printingBarcode.patientName}-${printingBarcode.barcode}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        } catch (err) {
+            console.error("Download failed", err);
+        }
+    };
 
     const fetchAuditLogs = async (targetId: string) => {
         try {
@@ -544,14 +593,23 @@ export default function WorklistPage() {
                                     </div>
                                     <div className="space-y-1 min-w-0">
                                         <div className="flex flex-col gap-1">
-                                            {/* EDIT TRIGGER: PLACED ABOVE THE NAME */}
-                                            <button 
-                                                onClick={() => setEditingBooking(booking)}
-                                                className="w-fit flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800 text-[8px] font-black uppercase tracking-widest text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/5 transition-all group/edit"
-                                            >
-                                                <Pencil size={10} className="group-hover/edit:rotate-12 transition-transform" />
-                                                Edit Detail
-                                            </button>
+                                            {/* ACTION HUB: ABOVE NAME */}
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={() => setEditingBooking(booking)}
+                                                    className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800 text-[8px] font-black uppercase tracking-widest text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/5 transition-all group/edit"
+                                                >
+                                                    <Pencil size={10} className="group-hover/edit:rotate-12 transition-transform" />
+                                                    Edit
+                                                </button>
+                                                <button 
+                                                    onClick={() => setPrintingBarcode(booking)}
+                                                    className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800 text-[8px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-500 hover:bg-blue-500/5 transition-all group/barcode"
+                                                >
+                                                    <Download size={10} className="group-hover/barcode:-translate-y-0.5 transition-transform" />
+                                                    Barcode
+                                                </button>
+                                            </div>
                                             <h4 className="text-base md:text-lg font-black tracking-tighter uppercase text-slate-950 dark:text-white truncate">{booking.patientName}</h4>
                                         </div>
                                         <div className="flex items-center gap-3">
@@ -906,6 +964,73 @@ export default function WorklistPage() {
                                         </Button>
                                     </div>
                                 </form>
+                            </motion.div>
+                        </motion.div>
+                    )
+                }
+
+                {
+                    printingBarcode && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[120] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-6"
+                            onClick={() => setPrintingBarcode(null)}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, y: 30 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.9, y: 30 }}
+                                className="bg-white dark:bg-slate-900 w-full max-w-sm md:max-w-md rounded-[3rem] p-8 md:p-12 border border-white/10 shadow-4xl space-y-8"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="text-center space-y-2">
+                                    <h3 className="text-2xl font-black italic uppercase tracking-tighter text-slate-900 dark:text-white leading-none">Barcode Export</h3>
+                                    <p className="text-slate-500 text-[8px] font-black uppercase tracking-widest italic">Industrial Standard Code 39 Node</p>
+                                </div>
+
+                                <div className="bg-slate-50 dark:bg-slate-800 p-8 rounded-[2rem] flex flex-col items-center justify-center shadow-inner">
+                                    <div id="barcode-download-area" className="bg-white p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-3 min-w-[55mm] min-h-[35mm]">
+                                        {/* TOP: DATE & AGE/SEX */}
+                                        <div className="w-full flex justify-between items-center text-[10px] font-black uppercase text-slate-900 tracking-tight leading-none px-1">
+                                            <p>Date: {new Date(printingBarcode.bookingDate).toLocaleDateString('en-GB')}</p>
+                                            <p>{printingBarcode.age}Y/{printingBarcode.gender?.charAt(0)}</p>
+                                        </div>
+
+                                        {/* MIDDLE: BARCODE */}
+                                        <div className="w-full flex flex-col items-center">
+                                            <svg viewBox="0 0 400 60" className="w-[45mm] h-[12mm]" preserveAspectRatio="none" shapeRendering="crispEdges">
+                                                <g fill="#000">
+                                                    {generateCode39(printingBarcode.barcode || "LAB")}
+                                                </g>
+                                            </svg>
+                                        </div>
+
+                                        {/* BOTTOM: BookingNo Name / barcode */}
+                                        <div className="w-full text-center px-1">
+                                            <p className="text-[10px] font-black uppercase text-slate-950 leading-none tracking-tight">
+                                                {printingBarcode._id.slice(-3).toUpperCase()} {printingBarcode.patientName} / {printingBarcode.barcode}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Button
+                                        onClick={() => setPrintingBarcode(null)}
+                                        variant="outline"
+                                        className="h-14 rounded-2xl font-black uppercase tracking-widest italic"
+                                    >
+                                        Close
+                                    </Button>
+                                    <Button
+                                        onClick={handleDownloadBarcode}
+                                        className="h-14 rounded-2xl bg-emerald-500 text-white font-black uppercase tracking-widest italic flex items-center justify-center gap-2 hover:scale-105 transition-all shadow-xl shadow-emerald-500/20"
+                                    >
+                                        <Download size={18} /> Download
+                                    </Button>
+                                </div>
                             </motion.div>
                         </motion.div>
                     )
