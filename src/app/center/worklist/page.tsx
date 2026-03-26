@@ -173,7 +173,7 @@ export default function WorklistPage() {
                     }
                     .top-row { 
                         display: flex; 
-                        justify-content: space-between; 
+                        justify-content: flex-end; /* Justify AGE/SEX to the right */
                         width: 100%; 
                         font-size: 8.5px; 
                         font-weight: 900; 
@@ -185,20 +185,22 @@ export default function WorklistPage() {
                         height: 12mm; 
                     }
                     .bottom-row { 
-                        width: 100%;
-                        font-size: 10.5px; 
+                        width: 44mm; /* Match barcode width */
+                        font-size: 11px; /* Corrected slightly larger size */
                         font-weight: 900; 
                         text-transform: uppercase; 
                         text-align: center;
-                        line-height: 1;
+                        line-height:1;
                         letter-spacing: -0.3px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
                     }
                 </style>
             </head>
             <body>
                 <div class="sticker">
                     <div class="top-row">
-                        <span>DATE: ${new Date(printingBarcode.bookingDate).toLocaleDateString('en-GB')}</span>
                         <span>${printingBarcode.age}Y/${printingBarcode.gender?.charAt(0)}</span>
                     </div>
                     <div class="barcode-svg">
