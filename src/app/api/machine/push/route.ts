@@ -184,8 +184,8 @@ export async function POST(req: Request) {
                 // STRATEGY: Combine Template Matching + Metadata Context
                 let targetContainers = report.results.filter((res: any) => {
                     const tidStr = (res.testId?._id || res.testId || "").toString();
-                    const testTemplate = booking.tests.find((bt: any) => bt._id.toString() === tidStr);
-                    return testTemplate?.parameters?.some((p: any) => p.name.toLowerCase() === incomingName);
+                    const testTemplate = (booking.tests as any[]).find((bt: any) => bt._id.toString() === tidStr);
+                    return (testTemplate as any)?.parameters?.some((p: any) => p.name.toLowerCase() === incomingName);
                 });
 
                 if (targetContainers.length === 0) {
