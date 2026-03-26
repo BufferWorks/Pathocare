@@ -173,8 +173,8 @@ export default function WorklistPage() {
                     }
                     .top-row { 
                         display: flex; 
-                        justify-content: flex-end; /* Justify AGE/SEX to the right */
-                        width: 100%; 
+                        justify-content: space-between; /* Age on Left, ID on Right */
+                        width: 44mm; /* Match barcode width precisely */
                         font-size: 8.5px; 
                         font-weight: 900; 
                         text-transform: uppercase; 
@@ -186,7 +186,7 @@ export default function WorklistPage() {
                     }
                     .bottom-row { 
                         width: 44mm; /* Match barcode width */
-                        font-size: 11px; /* Corrected slightly larger size */
+                        font-size: 11px; 
                         font-weight: 900; 
                         text-transform: uppercase; 
                         text-align: center;
@@ -202,6 +202,7 @@ export default function WorklistPage() {
                 <div class="sticker">
                     <div class="top-row">
                         <span>${printingBarcode.age}Y/${printingBarcode.gender?.charAt(0)}</span>
+                        <span>ID: ${printingBarcode.barcode}</span>
                     </div>
                     <div class="barcode-svg">
                         <svg viewBox="0 0 400 60" width="100%" height="100%" preserveAspectRatio="none" shapeRendering="crispEdges">
@@ -211,7 +212,7 @@ export default function WorklistPage() {
                         </svg>
                     </div>
                     <div class="bottom-row">
-                        ${printingBarcode._id.slice(-3).toUpperCase()} ${printingBarcode.patientName} / ${printingBarcode.barcode}
+                        ${printingBarcode._id.slice(-3).toUpperCase()} ${printingBarcode.patientName}
                     </div>
                 </div>
                 <script>
