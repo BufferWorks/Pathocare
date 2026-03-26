@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import {
     Activity,
@@ -9,15 +9,19 @@ import {
     CheckCircle2,
     Loader2,
     AlertCircle,
-    Download
+    Download,
+    Share2
 } from "lucide-react";
 import { motion } from "framer-motion";
+import html2canvas from "html2canvas";
 
 export default function PublicReceiptPage() {
     const { id } = useParams();
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
+    const receiptRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         async function fetchReceipt() {
@@ -39,6 +43,36 @@ export default function PublicReceiptPage() {
         }
         fetchReceipt();
     }, [id]);
+
+    const handleSaveImage = async () => {
+        if (!receiptRef.current) return;
+        setSaving(true);
+        try {
+            const element = receiptRef.current;
+            const canvas = await html2canvas(element, {
+                scale: 2, // High quality
+                useCORS: true,
+                backgroundColor: "#ffffff",
+                logging: false,
+                onclone: (documentClone) => {
+                    // Force white background and hide elements if needed
+                    const el = documentClone.querySelector(".receipt-wrapper") as HTMLElement;
+                    if (el) el.style.borderRadius = "0";
+                }
+            });
+
+            const link = document.createElement("a");
+            link.download = `RECEIPT_${data?.booking?.patientName?.replace(/\s+/g, '_').toUpperCase()}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        } catch (err) {
+            console.error("Save failed", err);
+            // Fallback to print
+            window.print();
+        } finally {
+            setSaving(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -74,9 +108,10 @@ export default function PublicReceiptPage() {
             `}</style>
 
             <motion.div
+                ref={receiptRef}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800 print:shadow-none print:border-none print:rounded-none"
+                className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-800 print:shadow-none print:border-none print:rounded-none receipt-wrapper"
             >
                 {/* Public Header */}
                 <div className="p-10 md:p-16 border-b-4 border-slate-950 dark:border-primary bg-slate-50 dark:bg-slate-950/20 flex flex-col md:flex-row justify-between gap-10 print:flex-row print:p-0 print:pb-6 print:bg-transparent">
@@ -172,11 +207,18 @@ export default function PublicReceiptPage() {
                 <div className="bg-slate-50 dark:bg-slate-950/50 p-8 text-center print:p-4 border-t border-slate-100 dark:border-slate-800">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-4 print:mb-0">Secure Node Verification • {center.name}</p>
                     <button 
-                        onClick={() => window.print()}
-                        className="print:hidden bg-slate-900 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-primary transition-colors flex items-center gap-3 mx-auto mt-2"
+                        onClick={handleSaveImage}
+                        disabled={saving}
+                        className="print:hidden bg-slate-900 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-primary transition-colors flex items-center gap-3 mx-auto mt-2 disabled:opacity-50"
                     >
-                        <Download size={16} /> Save Receipt
+                        {saving ? (
+                            <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                            <Download size={16} />
+                        )}
+                        {saving ? "Processing..." : "Save Receipt"}
                     </button>
+                    <p className="print:hidden text-[8px] font-bold text-slate-400 uppercase mt-4 tracking-wider">Tap to save high-quality image</p>
                 </div>
             </motion.div>
         </div>
