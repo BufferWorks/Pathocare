@@ -872,48 +872,60 @@ export default function PatientBookingPage() {
 
                             {/* High-Fidelity Barcode Preview */}
                             <div className="relative group">
-                                    <div id="barcode-sticker" className="bg-white p-4 rounded-lg border border-slate-200 flex flex-col items-center justify-center space-y-1 shadow-sm print:m-0 print:border-none min-w-[50mm] min-h-[25mm]">
-                                        {/* TOP: Date & Age/Sex (Matching Reference) */}
-                                        <div className="w-full flex justify-between items-center text-[10px] font-black uppercase text-slate-900 leading-tight">
-                                            <p>Date: {new Date().toLocaleDateString()}</p>
-                                            <p>Age/Sex: {lastBooking.age} (Y)/{lastBooking.gender?.charAt(0)}</p>
+                                    <div id="barcode-sticker" className="bg-white p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-2 shadow-sm print:m-0 print:border-none min-w-[50mm] min-h-[30mm]">
+                                        {/* TOP: DATE & AGE/SEX (Matching Reference Exactly) */}
+                                        <div className="w-full flex justify-between items-center text-[11px] font-black uppercase text-slate-900 tracking-tight leading-none px-1">
+                                            <p>DATE: {new Date().toLocaleDateString('en-GB')}</p>
+                                            <p>AGE/SEX: {lastBooking.age} (Y)/{lastBooking.gender?.charAt(0)}</p>
                                         </div>
 
-                                        {/* MIDDLE: REAL CODE 128 BARCODE */}
-                                        <div className="flex flex-col items-center py-1">
-                                            <div className="bg-white">
-                                                <svg viewBox="0 0 100 25" className="w-[45mm] h-[12mm]" preserveAspectRatio="none">
+                                        {/* MIDDLE: INDUSTRY-STANDARD CODE 39 BARCODE */}
+                                        <div className="w-full flex flex-col items-center py-1">
+                                            <div className="bg-white px-2">
+                                                <svg viewBox="0 0 400 60" className="w-[50mm] h-[15mm]" preserveAspectRatio="none" shapeRendering="crispEdges">
                                                     <g fill="#000">
-                                                        {/* Code 128 Dynamic Pattern */}
                                                         {(() => {
-                                                            const data = lastBooking.barcode || "";
-                                                            // Simplified Code 128-like pattern that scales with content
-                                                            // For pure scannability, we use high-contrast modules
-                                                            const bars = [1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0]; // Start B
-                                                            data.split('').forEach((char: string) => {
-                                                                const code = char.charCodeAt(0);
-                                                                // Deterministic seed-based bar generation for the character
-                                                                for(let i=0; i<6; i++) {
-                                                                    bars.push((code >> i) & 1);
-                                                                    bars.push(0); 
-                                                                }
-                                                            });
-                                                            bars.push(1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1); // Stop
+                                                            const patterns: any = {
+                                                                '0': '111221211', '1': '211211112', '2': '112211112', '3': '212211111',
+                                                                '4': '111221112', '5': '211221111', '6': '112221111', '7': '111211212',
+                                                                '8': '211211211', '9': '112211211', 'A': '211112112', 'B': '112112112',
+                                                                'C': '212112111', 'D': '111122112', 'E': '211122111', 'F': '112122111',
+                                                                'G': '111112212', 'H': '211112211', 'I': '112112211', 'J': '111122211',
+                                                                'K': '211111122', 'L': '112111122', 'M': '212111121', 'N': '111121122',
+                                                                'O': '211121121', 'P': '112121121', 'Q': '111111222', 'R': '211111221',
+                                                                'S': '112111221', 'T': '111121221', 'U': '221111112', 'V': '122111112',
+                                                                'W': '222111111', 'X': '121121112', 'Y': '221121111', 'Z': '122121111',
+                                                                '-': '121111212', '.': '221111211', ' ': '122111211', '*': '121121211'
+                                                            };
                                                             
-                                                            const unitWidth = 100 / bars.length;
-                                                            return bars.map((b, i) => b ? (
-                                                                <rect key={i} x={i * unitWidth} y="0" width={unitWidth} height="25" />
-                                                            ) : null);
+                                                            // Code 39 starts and ends with '*'
+                                                            const fullText = `*${(lastBooking.barcode || "LAB").toUpperCase()}*`;
+                                                            let x = 0;
+                                                            const narrow = 2; // Fixed narrow bar width
+                                                            const wide = 5;  // Fixed wide bar width
+
+                                                            return fullText.split('').map((char, charIdx) => {
+                                                                const pattern = patterns[char] || patterns['-'];
+                                                                const bars = pattern.split('').map((p: string, i: number) => {
+                                                                    const isBar = i % 2 === 0;
+                                                                    const width = p === '1' ? narrow : wide;
+                                                                    const currentX = x;
+                                                                    x += width;
+                                                                    return isBar ? <rect key={`${charIdx}-${i}`} x={currentX} y="0" width={width} height="60" /> : null;
+                                                                });
+                                                                x += narrow; // Inter-character gap
+                                                                return <g key={charIdx}>{bars}</g>;
+                                                            });
                                                         })()}
                                                     </g>
                                                 </svg>
                                             </div>
                                         </div>
 
-                                        {/* BOTTOM: BookingNo Name / {barcode} (Matching Reference) */}
-                                        <div className="w-full text-center">
-                                            <p className="text-[11px] font-black uppercase text-slate-900 leading-tight break-words">
-                                                {lastBooking._id.slice(-3)} {lastBooking.patientName} / {lastBooking.barcode}
+                                        {/* BOTTOM: BookingNo Name / barcode (Matching Reference Exactly) */}
+                                        <div className="w-full text-center px-1">
+                                            <p className="text-[12px] font-black uppercase text-slate-950 leading-none tracking-tight">
+                                                {lastBooking._id.slice(-3).toUpperCase()} {lastBooking.patientName} / {lastBooking.barcode}
                                             </p>
                                         </div>
                                     </div>
