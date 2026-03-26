@@ -19,7 +19,9 @@ import {
     ShieldCheck,
     QrCode,
     Zap,
-    Share2
+    Share2,
+    Pencil,
+    X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -55,6 +57,8 @@ export default function WorklistPage() {
     const [selectedAuditId, setSelectedAuditId] = useState<string | null>(null);
     const [auditLogs, setAuditLogs] = useState<any[]>([]);
     const [auditLoading, setAuditLoading] = useState(false);
+    const [editingBooking, setEditingBooking] = useState<any>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const fetchAuditLogs = async (targetId: string) => {
         try {
@@ -181,6 +185,29 @@ export default function WorklistPage() {
         } catch (err) {
             console.error("Sharing failed", err);
             alert("Neural Link Severed: Broadcast interrupted.");
+        }
+    };
+    const handleUpdatePatient = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            setIsUpdating(true);
+            const res = await fetch(`/api/bookings/${editingBooking._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editingBooking)
+            });
+            if (res.ok) {
+                setWorklist(prev => prev.map(b => b._id === editingBooking._id ? { ...b, ...editingBooking } : b));
+                setEditingBooking(null);
+                alert("Patient record updated successfully.");
+            } else {
+                alert("Correction Error: Failed to update clinical node.");
+            }
+        } catch (err) {
+            console.error("Update failed", err);
+            alert("Neural Link Severed: Update interrupted.");
+        } finally {
+            setIsUpdating(false);
         }
     };
 
@@ -516,7 +543,15 @@ export default function WorklistPage() {
                                         )}
                                     </div>
                                     <div className="space-y-1 min-w-0">
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex flex-col gap-1">
+                                            {/* EDIT TRIGGER: PLACED ABOVE THE NAME */}
+                                            <button 
+                                                onClick={() => setEditingBooking(booking)}
+                                                className="w-fit flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800 text-[8px] font-black uppercase tracking-widest text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/5 transition-all group/edit"
+                                            >
+                                                <Pencil size={10} className="group-hover/edit:rotate-12 transition-transform" />
+                                                Edit Detail
+                                            </button>
                                             <h4 className="text-base md:text-lg font-black tracking-tighter uppercase text-slate-950 dark:text-white truncate">{booking.patientName}</h4>
                                         </div>
                                         <div className="flex items-center gap-3">
@@ -770,6 +805,107 @@ export default function WorklistPage() {
                                         </div>
                                     )}
                                 </div>
+                            </motion.div>
+                        </motion.div>
+                    )
+                }
+
+                {
+                    editingBooking && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[110] bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 md:p-8"
+                            onClick={() => setEditingBooking(null)}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-4xl overflow-hidden border border-white/20"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                                    <div>
+                                        <h3 className="text-xl font-black italic uppercase tracking-tighter text-slate-900 dark:text-white leading-none">Edit Clinical Identity</h3>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mt-2 flex items-center gap-2">
+                                            <Zap size={14} className="fill-emerald-500" /> Recalibrating Patient Node
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setEditingBooking(null)}
+                                        className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-red-500 transition-all shadow-lg"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+
+                                <form onSubmit={handleUpdatePatient} className="p-8 space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2 md:col-span-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 italic">Full Name</label>
+                                            <input
+                                                type="text"
+                                                value={editingBooking.patientName}
+                                                onChange={(e) => setEditingBooking({ ...editingBooking, patientName: e.target.value })}
+                                                className="w-full h-14 bg-slate-50 dark:bg-slate-800 rounded-xl px-5 outline-none font-bold italic focus:ring-2 ring-emerald-500/20 transition-all border-none text-slate-900 dark:text-white"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 italic">Age (Years)</label>
+                                            <input
+                                                type="number"
+                                                value={editingBooking.age}
+                                                onChange={(e) => setEditingBooking({ ...editingBooking, age: Number(e.target.value) })}
+                                                className="w-full h-14 bg-slate-50 dark:bg-slate-800 rounded-xl px-5 outline-none font-bold italic focus:ring-2 ring-emerald-500/20 transition-all border-none text-slate-900 dark:text-white"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 italic">Gender</label>
+                                            <select
+                                                value={editingBooking.gender}
+                                                onChange={(e) => setEditingBooking({ ...editingBooking, gender: e.target.value })}
+                                                className="w-full h-14 bg-slate-50 dark:bg-slate-800 rounded-xl px-5 outline-none font-bold italic focus:ring-2 ring-emerald-500/20 transition-all border-none text-slate-900 dark:text-white"
+                                                required
+                                            >
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2 md:col-span-2">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-2 italic">Mobile Number</label>
+                                            <input
+                                                type="tel"
+                                                value={editingBooking.phone}
+                                                onChange={(e) => setEditingBooking({ ...editingBooking, phone: e.target.value })}
+                                                className="w-full h-14 bg-slate-50 dark:bg-slate-800 rounded-xl px-5 outline-none font-bold italic focus:ring-2 ring-emerald-500/20 transition-all border-none text-slate-900 dark:text-white"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4 flex gap-4">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => setEditingBooking(null)}
+                                            className="flex-1 h-14 rounded-xl font-black uppercase tracking-widest italic"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            disabled={isUpdating}
+                                            className="flex-1 h-14 rounded-xl bg-slate-950 text-white font-black uppercase tracking-widest italic flex items-center justify-center gap-2 hover:scale-105 transition-all"
+                                        >
+                                            {isUpdating ? <Loader2 className="w-5 h-5 animate-spin" /> : "Commit Changes"}
+                                        </Button>
+                                    </div>
+                                </form>
                             </motion.div>
                         </motion.div>
                     )
