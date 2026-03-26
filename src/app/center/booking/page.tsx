@@ -82,9 +82,10 @@ export default function PatientBookingPage() {
                     @page { size: 50mm 25mm; margin: 0; }
                     body { margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 25mm; width: 50mm; font-family: sans-serif; background: white; }
                     .sticker { width: 50mm; height: 25mm; padding: 1.5mm 4.5mm; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5mm; }
-                    .top-row { display: flex; justify-content: space-between; width: 44mm; font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.2px; }
-                    .barcode-svg { width: 44mm; height: 12mm; }
-                    .bottom-row { width: 44mm; font-size: 11px; font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1; letter-spacing: -0.3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+                    .sticker { width: 50mm; height: 25mm; padding: 1.5mm 4.5mm; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 1mm; }
+                    .top-row { display: flex; justify-content: flex-start; gap: 3mm; width: 100%; font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.2px; }
+                    .barcode-svg { width: 42mm; height: 12mm; }
+                    .bottom-row { width: 100%; font-size: 11px; font-weight: 900; text-transform: uppercase; text-align: left; line-height: 1; letter-spacing: -0.3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
                 </style>
             </head>
             <body>

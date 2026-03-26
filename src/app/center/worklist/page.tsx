@@ -167,29 +167,30 @@ export default function WorklistPage() {
                         box-sizing: border-box; 
                         display: flex; 
                         flex-direction: column; 
-                        align-items: center; 
+                        align-items: flex-start; /* Shift Everything to the Left */
                         justify-content: center; 
-                        gap: 1.5mm;
+                        gap: 1mm;
                     }
                     .top-row { 
                         display: flex; 
-                        justify-content: space-between; /* Age on Left, ID on Right */
-                        width: 44mm; /* Match barcode width precisely */
+                        justify-content: flex-start; /* Shift Age and ID to the left */
+                        gap: 3mm; /* Small space between Age and ID */
+                        width: 100%; 
                         font-size: 8.5px; 
                         font-weight: 900; 
                         text-transform: uppercase; 
                         letter-spacing: -0.2px;
                     }
                     .barcode-svg { 
-                        width: 44mm; 
+                        width: 42mm; /* Slightly smaller for better left-margin */
                         height: 12mm; 
                     }
                     .bottom-row { 
-                        width: 44mm; /* Match barcode width */
+                        width: 100%;
                         font-size: 11px; 
                         font-weight: 900; 
                         text-transform: uppercase; 
-                        text-align: center;
+                        text-align: left; /* Shift Name to the left */
                         line-height:1;
                         letter-spacing: -0.3px;
                         overflow: hidden;
