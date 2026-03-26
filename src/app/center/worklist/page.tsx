@@ -159,17 +159,46 @@ export default function WorklistPage() {
             <head>
                 <style>
                     @page { size: 50mm 25mm; margin: 0; }
-                    body { margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 25mm; width: 50mm; font-family: sans-serif; }
-                    .sticker { width: 50mm; height: 25mm; padding: 2mm; box-sizing: border-box; display: flex; flex-col; items-center; justify-content: center; text-align: center; }
-                    .top-row { display: flex; justify-content: space-between; width: 100%; font-size: 8px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
-                    .barcode-svg { width: 45mm; height: 12mm; }
-                    .bottom-row { font-size: 10px; font-weight: 900; text-transform: uppercase; margin-top: 2px; }
+                    body { margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 25mm; width: 50mm; font-family: sans-serif; background: white; }
+                    .sticker { 
+                        width: 50mm; 
+                        height: 25mm; 
+                        padding: 1.5mm 3mm; 
+                        box-sizing: border-box; 
+                        display: flex; 
+                        flex-direction: column; 
+                        align-items: center; 
+                        justify-content: center; 
+                        gap: 1.5mm;
+                    }
+                    .top-row { 
+                        display: flex; 
+                        justify-content: space-between; 
+                        width: 100%; 
+                        font-size: 8.5px; 
+                        font-weight: 900; 
+                        text-transform: uppercase; 
+                        letter-spacing: -0.2px;
+                    }
+                    .barcode-svg { 
+                        width: 44mm; 
+                        height: 12mm; 
+                    }
+                    .bottom-row { 
+                        width: 100%;
+                        font-size: 10.5px; 
+                        font-weight: 900; 
+                        text-transform: uppercase; 
+                        text-align: center;
+                        line-height: 1;
+                        letter-spacing: -0.3px;
+                    }
                 </style>
             </head>
             <body>
                 <div class="sticker">
                     <div class="top-row">
-                        <span>Date: ${new Date(printingBarcode.bookingDate).toLocaleDateString('en-GB')}</span>
+                        <span>DATE: ${new Date(printingBarcode.bookingDate).toLocaleDateString('en-GB')}</span>
                         <span>${printingBarcode.age}Y/${printingBarcode.gender?.charAt(0)}</span>
                     </div>
                     <div class="barcode-svg">
@@ -185,8 +214,10 @@ export default function WorklistPage() {
                 </div>
                 <script>
                     window.onload = () => {
-                        window.print();
-                        setTimeout(() => { window.frameElement.remove(); }, 1000);
+                        setTimeout(() => {
+                            window.print();
+                            setTimeout(() => { window.frameElement.remove(); }, 500);
+                        }, 300);
                     };
                 </script>
             </body>
