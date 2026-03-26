@@ -163,7 +163,7 @@ export default function WorklistPage() {
                     .sticker { 
                         width: 50mm; 
                         height: 25mm; 
-                        padding: 1.5mm 3mm; 
+                        padding: 1.5mm 4.5mm; 
                         box-sizing: border-box; 
                         display: flex; 
                         flex-direction: column; 
