@@ -23,7 +23,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex items-center justify-between glass rounded-2xl px-4 md:px-6 py-3">
           <div className="flex items-center gap-2 min-w-0">
             <Activity className="text-primary w-6 h-6 md:w-8 md:h-8 shrink-0" />
-            <span className="text-lg md:text-xl font-bold tracking-tight truncate">Patho<span className="text-primary">Care</span></span>
+            <span className="text-lg md:text-xl font-bold tracking-tight truncate">Patho<span className="text-primary">Core</span></span>
           </div>
           <div className="hidden lg:flex items-center gap-8 font-medium">
             <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
