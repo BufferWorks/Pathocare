@@ -47,31 +47,67 @@ export default function PublicReceiptPage() {
     const handleSaveImage = async () => {
         if (!receiptRef.current) return;
         setSaving(true);
+        
+        let timeout: any = setTimeout(() => {
+            if (saving) {
+                setSaving(false);
+                alert("Image capture taking too long. Opening Print Dial...");
+                window.print();
+            }
+        }, 10000);
+
         try {
             const element = receiptRef.current;
             const canvas = await html2canvas(element, {
-                scale: 2, // High quality
+                scale: 2,
                 useCORS: true,
                 backgroundColor: "#ffffff",
-                logging: false,
+                logging: true, // Help trace on remote
                 onclone: (documentClone) => {
-                    // Force white background and hide elements if needed
                     const el = documentClone.querySelector(".receipt-wrapper") as HTMLElement;
                     if (el) el.style.borderRadius = "0";
                 }
             });
 
+            clearTimeout(timeout);
+            const imageUrl = canvas.toDataURL("image/png");
+            
+            // Try Native Share if available (best for mobile)
+            if (navigator.share && typeof window !== 'undefined') {
+                try {
+                    const blob = await (await fetch(imageUrl)).blob();
+                    const file = new File([blob], `RECEIPT_${data?.booking?.patientName?.replace(/\s+/g, '_').toUpperCase()}.png`, { type: 'image/png' });
+                    await navigator.share({
+                        files: [file],
+                        title: 'Invoice',
+                        text: 'Your Clinical Receipt'
+                    });
+                     setSaving(false);
+                     return;
+                } catch (shareErr) {
+                    console.error("Native share failed", shareErr);
+                }
+            }
+
+            // Fallback: Direct download
             const link = document.createElement("a");
             link.download = `RECEIPT_${data?.booking?.patientName?.replace(/\s+/g, '_').toUpperCase()}.png`;
-            link.href = canvas.toDataURL("image/png");
+            link.href = imageUrl;
+            document.body.appendChild(link); // Required for mobile
             link.click();
+            document.body.removeChild(link);
         } catch (err) {
             console.error("Save failed", err);
-            // Fallback to print
             window.print();
         } finally {
+            clearTimeout(timeout);
             setSaving(false);
         }
+    };
+
+    const handleWhatsAppShare = () => {
+        const text = encodeURIComponent(`*PATHOLOGY RECEIPT*\n\nPatient: ${data.booking.patientName}\nTotal Paid: ₹${data.booking.paidAmount}\n\nView Bill: ${window.location.href}`);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
     };
 
     if (loading) {
@@ -203,22 +239,32 @@ export default function PublicReceiptPage() {
                     </div>
                 </div>
 
-                {/* Footer Message */}
-                <div className="bg-slate-50 dark:bg-slate-950/50 p-8 text-center print:p-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="bg-slate-50 dark:bg-slate-950/50 p-8 text-center print:p-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em] italic mb-4 print:mb-0">Secure Node Verification • {center.name}</p>
-                    <button 
-                        onClick={handleSaveImage}
-                        disabled={saving}
-                        className="print:hidden bg-slate-900 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-primary transition-colors flex items-center gap-3 mx-auto mt-2 disabled:opacity-50"
-                    >
-                        {saving ? (
-                            <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                            <Download size={16} />
-                        )}
-                        {saving ? "Processing..." : "Save Receipt"}
-                    </button>
-                    <p className="print:hidden text-[8px] font-bold text-slate-400 uppercase mt-4 tracking-wider">Tap to save high-quality image</p>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center print:hidden">
+                        <button 
+                            onClick={handleSaveImage}
+                            disabled={saving}
+                            className="bg-slate-900 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-primary transition-colors flex items-center justify-center gap-3 disabled:opacity-50 min-w-[200px]"
+                        >
+                            {saving ? (
+                                <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                                <Download size={16} />
+                            )}
+                            {saving ? "Processing..." : "Save Image"}
+                        </button>
+
+                        <button 
+                            onClick={handleWhatsAppShare}
+                            className="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-emerald-500 transition-colors flex items-center justify-center gap-3 min-w-[200px]"
+                        >
+                            <Share2 size={16} /> WhatsApp Share
+                        </button>
+                    </div>
+
+                    <p className="print:hidden text-[8px] font-bold text-slate-400 uppercase mt-2 tracking-wider">Tap to save or share with clinical unit</p>
                 </div>
             </motion.div>
         </div>
