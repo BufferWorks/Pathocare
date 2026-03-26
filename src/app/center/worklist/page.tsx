@@ -265,7 +265,7 @@ export default function WorklistPage() {
     };
 
     return (
-        <div className="space-y-8 md:space-y-12 pb-20 px-4 md:px-0">
+        <div id="worklist-main-content" className="space-y-8 md:space-y-12 pb-20 px-4 md:px-0 print:hidden">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
@@ -979,7 +979,7 @@ export default function WorklistPage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[120] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-6"
+                            className="fixed inset-0 z-[120] bg-slate-950/80 backdrop-blur-2xl flex items-center justify-center p-6 barcode-modal-overlay"
                             onClick={() => setPrintingBarcode(null)}
                         >
                             <motion.div
@@ -1046,12 +1046,12 @@ export default function WorklistPage() {
                     )
                 }
 
-                {/* PRINT-ONLY BARCODE CONTAINER (Hidden in UI) */}
-                <div className="hidden print:block fixed inset-0 bg-white z-[9999]">
+                {/* PRINT-ONLY BARCODE SECTION (Hidden in UI, Visible in Print) */}
+                <div id="barcode-print-section" className="hidden print:block fixed inset-0 bg-white z-[9999]">
                     {printingBarcode && (
-                        <div className="flex items-center justify-center h-full">
-                            <div className="bg-white p-2 flex flex-col items-center justify-center space-y-1 w-[50mm] h-[25mm]">
-                                <div className="w-full flex justify-between items-center text-[8px] font-black uppercase text-black leading-none">
+                        <div className="flex items-center justify-center min-h-screen">
+                            <div className="bg-white p-0 flex flex-col items-center justify-center space-y-1 w-[50mm] h-[25mm]">
+                                <div className="w-full flex justify-between items-center text-[9px] font-black uppercase text-black leading-none px-1">
                                     <p>Date: {new Date(printingBarcode.bookingDate).toLocaleDateString('en-GB')}</p>
                                     <p>{printingBarcode.age}Y/{printingBarcode.gender?.charAt(0)}</p>
                                 </div>
@@ -1060,8 +1060,8 @@ export default function WorklistPage() {
                                         {generateCode39(printingBarcode.barcode || "LAB")}
                                     </g>
                                 </svg>
-                                <div className="w-full text-center">
-                                    <p className="text-[10px] font-black uppercase text-black leading-none">
+                                <div className="w-full text-center px-1">
+                                    <p className="text-[11px] font-black uppercase text-black leading-none">
                                         {printingBarcode._id.slice(-3).toUpperCase()} {printingBarcode.patientName} / {printingBarcode.barcode}
                                     </p>
                                 </div>
@@ -1072,20 +1072,35 @@ export default function WorklistPage() {
 
                 <style jsx global>{`
                     @media print {
-                        body * {
-                            visibility: hidden !important;
+                        /* Total Isolation for Barcode Printing */
+                        #worklist-main-content, 
+                        .barcode-modal-overlay, 
+                        header, nav, aside, footer {
+                            display: none !important;
                         }
-                        .print\\:block, .print\\:block * {
+                        
+                        #barcode-print-section {
+                            display: block !important;
                             visibility: visible !important;
                             position: fixed !important;
                             left: 0 !important;
                             top: 0 !important;
                             width: 100% !important;
                             height: 100% !important;
+                            z-index: 99999 !important;
                             background: white !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
+                        }
+
+                        html, body {
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            height: auto !important;
+                            overflow: visible !important;
+                        }
+
+                        @page {
+                            size: 50mm 25mm;
+                            margin: 0;
                         }
                     }
                 `}</style>
