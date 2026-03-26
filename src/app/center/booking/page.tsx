@@ -39,6 +39,73 @@ export default function PatientBookingPage() {
     const [selectedTests, setSelectedTests] = useState<any[]>([]);
     const [selectedPackages, setSelectedPackages] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const handlePrintBarcode = (booking: any) => {
+        if (!booking) return;
+        const iframe = document.createElement("iframe");
+        iframe.style.position = "fixed"; iframe.style.right = "0"; iframe.style.bottom = "0";
+        iframe.style.width = "0"; iframe.style.height = "0"; iframe.style.border = "0";
+        document.body.appendChild(iframe);
+        const doc = iframe.contentWindow?.document;
+        if (!doc) return;
+
+        const generateCode39String = (data: string) => {
+            const patterns: any = {
+                '0': '111221211', '1': '211211112', '2': '112211112', '3': '212211111',
+                '4': '111221112', '5': '211221111', '6': '112221111', '7': '111211212',
+                '8': '211211211', '9': '112211211', 'A': '211112112', 'B': '112112112',
+                'C': '212112111', 'D': '111122112', 'E': '211122111', 'F': '112122111',
+                'G': '111112212', 'H': '211112211', 'I': '112112211', 'J': '111122211',
+                'K': '211111122', 'L': '112111122', 'M': '212111121', 'N': '111121122',
+                'O': '211121121', 'P': '112121121', 'Q': '111111222', 'R': '211111221',
+                'S': '112111221', 'T': '111121221', 'U': '221111112', 'V': '122111112',
+                'W': '222111111', 'X': '121121112', 'Y': '221121111', 'Z': '122121111',
+                '-': '121111212', '.': '221111211', ' ': '122111211', '*': '121121211'
+            };
+            const fullText = `*${(data || "LAB").toUpperCase()}*`;
+            let x = 0; const narrow = 2; const wide = 5; let svgContent = '';
+            fullText.split('').forEach((char) => {
+                const pattern = patterns[char] || patterns['-'];
+                pattern.split('').forEach((p: string, i: number) => {
+                    if (i % 2 === 0) svgContent += `<rect x="${x}" y="0" width="${p === '1' ? narrow : wide}" height="60" />`;
+                    x += p === '1' ? narrow : wide;
+                });
+                x += narrow;
+            });
+            return svgContent;
+        };
+
+        const barcodeHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    @page { size: 50mm 25mm; margin: 0; }
+                    body { margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 25mm; width: 50mm; font-family: sans-serif; background: white; }
+                    .sticker { width: 50mm; height: 25mm; padding: 1.5mm 3mm; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5mm; }
+                    .top-row { display: flex; justify-content: space-between; width: 100%; font-size: 8.5px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.2px; }
+                    .barcode-svg { width: 44mm; height: 12mm; }
+                    .bottom-row { width: 100%; font-size: 10.5px; font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1; letter-spacing: -0.3px; }
+                </style>
+            </head>
+            <body>
+                <div class="sticker">
+                    <div class="top-row">
+                        <span>DATE: ${new Date().toLocaleDateString('en-GB')}</span>
+                        <span>${booking.age}Y/${booking.gender?.charAt(0)}</span>
+                    </div>
+                    <div class="barcode-svg">
+                        <svg viewBox="0 0 400 60" width="100%" height="100%" preserveAspectRatio="none" shapeRendering="crispEdges">
+                            <g fill="#000">${generateCode39String(booking.barcode || "LAB")}</g>
+                        </svg>
+                    </div>
+                    <div class="bottom-row">${booking._id.slice(-3).toUpperCase()} ${booking.patientName} / ${booking.barcode}</div>
+                </div>
+                <script>window.onload = () => { setTimeout(() => { window.print(); setTimeout(() => { window.frameElement.remove(); }, 500); }, 300); };</script>
+            </body>
+            </html>
+        `;
+        doc.open(); doc.write(barcodeHtml); doc.close();
+    };
     const [loading, setLoading] = useState(true);
     const [bookingLoading, setBookingLoading] = useState(false);
     const [tab, setTab] = useState<"All" | "Tests" | "Packages">("All");
@@ -941,7 +1008,7 @@ export default function PatientBookingPage() {
                                     </Button>
                                 ) : (
                                     <Button
-                                        onClick={() => window.print()}
+                                        onClick={() => handlePrintBarcode(lastBooking)}
                                         className="h-20 rounded-[2rem] text-lg font-black uppercase tracking-widest italic flex items-center justify-center gap-4 bg-primary text-white shadow-2xl shadow-primary/40 group active:scale-95"
                                     >
                                         <QrCode size={24} className="group-hover:rotate-12 transition-transform" /> Print Specimen Barcode
@@ -959,7 +1026,7 @@ export default function PatientBookingPage() {
                                     {lastBooking.barcode && (
                                         <Button
                                             variant="outline"
-                                            onClick={() => window.print()}
+                                            onClick={() => handlePrintBarcode(lastBooking)}
                                             className="h-16 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest italic border-slate-200 text-slate-400"
                                         >
                                             Reprint Label
@@ -980,27 +1047,6 @@ export default function PatientBookingPage() {
             </AnimatePresence>
 
             <style jsx global>{`
-                @media print {
-                    body * {
-                        visibility: hidden;
-                    }
-                    #barcode-sticker, #barcode-sticker * {
-                        visibility: visible;
-                    }
-                    #barcode-sticker {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 50mm;
-                        height: 38mm;
-                        border: none;
-                        padding: 10px;
-                        margin: 0;
-                        box-shadow: none;
-                        background: white !important;
-                        -webkit-print-color-adjust: exact;
-                    }
-                }
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 4px;
                 }
