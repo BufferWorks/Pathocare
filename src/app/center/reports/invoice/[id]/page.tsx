@@ -173,7 +173,7 @@ export default function InvoicePage() {
                                     </div>
                                     <div className="border-l border-slate-200 pl-4">
                                         <img
-                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${typeof window !== 'undefined' ? window.location.href : id}`}
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${typeof window !== 'undefined' ? `${window.location.origin}/public/receipt/${id}` : id}`}
                                             alt="QR"
                                             className="w-10 h-10 opacity-70 grayscale"
                                         />
