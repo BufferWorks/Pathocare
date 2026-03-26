@@ -872,35 +872,52 @@ export default function PatientBookingPage() {
 
                             {/* High-Fidelity Barcode Preview */}
                             <div className="relative group">
-                                <div id="barcode-sticker" className="bg-white p-8 rounded-3xl border-4 border-slate-100 dark:border-white/5 flex flex-col items-center justify-center space-y-4 shadow-2xl transition-all">
-                                    <div className="w-full flex justify-between items-start border-b border-slate-100 pb-2 mb-2">
-                                        <div className="space-y-1">
-                                            <p className="text-[12px] font-black uppercase tracking-tighter text-slate-900">{lastBooking.patientName}</p>
-                                            <p className="text-[8px] font-bold text-slate-500 uppercase">{lastBooking.age}Y • {lastBooking.gender}</p>
+                                <div id="barcode-sticker" className="bg-white p-4 rounded-xl border border-slate-200 flex flex-col items-center justify-center space-y-2 shadow-sm print:m-0 print:border-none">
+                                    {/* Header - Minimal for tube space */}
+                                    <div className="w-full flex justify-between items-center border-b border-slate-100 pb-1 mb-1">
+                                        <p className="text-[10px] font-black uppercase text-primary tracking-widest">PATHO-CARE LIS</p>
+                                        <p className="text-[8px] font-bold text-slate-400">{new Date().toLocaleDateString()}</p>
+                                    </div>
+
+                                    {/* 🧬 THE NEURAL BARCODE HUB (Name - Bars - Age) */}
+                                    <div className="w-full flex items-center justify-between gap-4 py-2">
+                                        {/* LEFT: Patient Name (Vertical-ish or wrapped) */}
+                                        <div className="w-16 flex flex-col items-start justify-center">
+                                            <p className="text-[12px] font-black uppercase tracking-tight text-slate-900 leading-[0.9] break-words">
+                                                {lastBooking.patientName}
+                                            </p>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-[10px] font-black uppercase text-primary">PATHO-CARE</p>
-                                            <p className="text-[7px] font-bold text-slate-400">{new Date().toLocaleDateString()}</p>
+
+                                        {/* CENTER: Barcode Image */}
+                                        <div className="flex-1 flex flex-col items-center gap-1">
+                                            <div className="flex gap-[1px] items-stretch h-10 print:h-12 bg-black/5 p-1 rounded-sm">
+                                                {[1, 2, 3, 1, 2, 4, 1, 2, 1, 3, 2, 1, 4, 1, 1, 2, 3, 1, 2, 1].map((w, i) => (
+                                                    <div key={i} className="bg-black" style={{ width: `${w}px` }} />
+                                                ))}
+                                                <div className="w-[1px] bg-black mx-[1px]" />
+                                                {[2, 1, 3, 1, 2, 4, 2, 1, 3, 1, 2, 1].map((w, i) => (
+                                                    <div key={i} className="bg-black" style={{ width: `${w}px` }} />
+                                                ))}
+                                            </div>
+                                            <p className="text-[9px] font-black tracking-[0.3em] text-slate-900 uppercase">
+                                                {lastBooking.barcode}
+                                            </p>
+                                        </div>
+
+                                        {/* RIGHT: Age & Gender */}
+                                        <div className="w-16 flex flex-col items-end justify-center text-right">
+                                            <p className="text-[10px] font-black text-slate-900 leading-none">
+                                                {lastBooking.age}<span className="text-[8px] text-slate-400">Y</span>
+                                            </p>
+                                            <p className="text-[8px] font-black text-slate-500 uppercase tracking-tighter mt-1">
+                                                {lastBooking.gender?.charAt(0)}
+                                            </p>
                                         </div>
                                     </div>
 
-                                    {/* Neural Barcode Placeholder (SVG Implementation) */}
-                                    <div className="py-4 px-8 bg-slate-50 rounded-2xl border-2 border-slate-200 flex flex-col items-center gap-2">
-                                        <div className="flex gap-[2px] items-stretch h-12">
-                                            {[1, 2, 4, 1, 3, 2, 1, 4, 2, 3, 1, 1, 2, 4, 2, 1, 3].map((w, i) => (
-                                                <div key={i} className="bg-black" style={{ width: `${w}px` }} />
-                                            ))}
-                                            <div className="w-[1px] bg-black mx-[2px]" />
-                                            {[2, 1, 3, 4, 1, 2, 1, 3, 2, 4, 1, 2, 3, 1, 2].map((w, i) => (
-                                                <div key={i} className="bg-black" style={{ width: `${w}px` }} />
-                                            ))}
-                                        </div>
-                                        <p className="text-[10px] font-black tracking-[0.5em] text-slate-900">{lastBooking.barcode || `SPEC-${lastBooking._id.slice(-6).toUpperCase()}`}</p>
-                                    </div>
-
-                                    <div className="w-full text-center">
-                                        <p className="text-[7px] font-black uppercase tracking-widest text-slate-400">
-                                            Hand this specimen to the Lab Technical Room for Machine Ingestion.
+                                    <div className="w-full text-center pt-1 border-t border-slate-50">
+                                        <p className="text-[6px] font-black uppercase tracking-widest text-slate-400 italic">
+                                            Neural Tracking Protocol v2.4 • SCAN SECURE
                                         </p>
                                     </div>
                                 </div>

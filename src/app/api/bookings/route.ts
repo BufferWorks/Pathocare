@@ -29,9 +29,27 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Node Identity Unavailable: Missing Center ID" }, { status: 400 });
         }
 
+        // 1. Auto-generate Barcode if not provided
+        let barcode = data.barcode;
+        if (!barcode || barcode.trim() === "") {
+            // Generate unique 8-char identifier: PC-[6 random chars]
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Avoid ambiguous O, 0, I, 1
+            let isUnique = false;
+            while (!isUnique) {
+                let random = "";
+                for (let i = 0; i < 6; i++) {
+                    random += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                barcode = `PC-${random}`;
+                const existing = await Booking.findOne({ barcode });
+                if (!existing) isUnique = true;
+            }
+        }
+
         // Force the resolved centerId to maintain data isolation
         const bookingData = {
             ...data,
+            barcode,
             centerId
         };
 

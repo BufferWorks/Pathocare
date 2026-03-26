@@ -116,32 +116,63 @@ export async function POST(req: Request) {
             const lowName = t.name.toLowerCase();
             const acronym = lowName.replace(/[^a-z\s]/gi, '').split(/\s+/).map((w: string) => w[0]).join('');
             const tid = t._id.toString();
-            
-            machineToTestIdMap[lowName] = tid; 
-            machineToTestIdMap[acronym] = tid; 
+
+            machineToTestIdMap[lowName] = tid;
+            machineToTestIdMap[acronym] = tid;
             if (t.category) machineToTestIdMap[t.category.toLowerCase()] = tid;
         });
 
         const findTargetId = (machineTestName: string) => {
             if (!machineTestName) return null;
-            const pStr = machineTestName.toLowerCase();
-            
-            // 1. Direct/Acronym Map
+            const pStr = machineTestName.toLowerCase().trim();
+
+            // 1. Direct/Acronym Map (Exact Match)
             if (machineToTestIdMap[pStr]) return machineToTestIdMap[pStr];
             const acronym = pStr.replace(/[^a-z\s]/gi, '').split(/\s+/).map((w: string) => w[0]).join('');
             if (machineToTestIdMap[acronym]) return machineToTestIdMap[acronym];
-            
-            // 2. Substring Match against booking tests
+
+            // 2. Prioritize Exact Match in booking tests
+            const exactMatch = (booking.tests as any[]).find(t => t.name.toLowerCase() === pStr);
+            if (exactMatch) return exactMatch._id.toString();
+
+            // 3. Smart Substring Match (Longest match wins)
+            let bestMatch: any = null;
+            let longestMatchLength = 0;
+
             for (let t of (booking.tests as any[])) {
-               const tn = t.name.toLowerCase();
-               if (pStr.includes(tn) || tn.includes(pStr)) return t._id.toString();
+                const tn = t.name.toLowerCase();
+                if (pStr.includes(tn) || tn.includes(pStr)) {
+                    // We take the match that has the longest common string to avoid "CBC" matching "CBC+DIFF" incorrectly
+                    const matchLen = Math.min(tn.length, pStr.length);
+                    if (matchLen > longestMatchLength) {
+                        longestMatchLength = matchLen;
+                        bestMatch = t;
+                    }
+                }
             }
-            return null;
+            return bestMatch ? bestMatch._id.toString() : null;
         };
 
         // High-Performance Mapping Across Multiple Tests
         let updatedCount = 0;
         const seenTests = new Set<string>();
+
+        // 🧠 METADATA EXTRACTION (User-Preferred Workflow)
+        // Scan parameters once to extract global context like "Test Mode", Age, etc.
+        let extractedTestMode = "";
+        const metadata: any = {};
+        if (parameters && Array.isArray(parameters)) {
+            parameters.forEach((p: any) => {
+                const lowName = (p.name || "").toLowerCase().trim();
+                if (lowName === "test mode" || lowName === "sample mode" || lowName === "profile") {
+                    extractedTestMode = String(p.value);
+                }
+                // Track other metadata for potential clinical context
+                if (["age", "gender", "remark", "ref group"].includes(lowName)) {
+                    metadata[lowName] = p.value;
+                }
+            });
+        }
 
         if (parameters && Array.isArray(parameters)) {
             parameters.forEach((incoming: any) => {
@@ -149,29 +180,52 @@ export async function POST(req: Request) {
                 const computedStatus = (incomingFlags && incomingFlags !== "N" && incomingFlags !== "") ? incomingFlags : "NORMAL";
                 const incomingName = incoming.name.toLowerCase();
 
-                // 1. Find EXACTLY which Test Container this parameter belongs to by ID
-                let targetId = findTargetId(incoming.testName);
-                
-                // Fallback: If no testName provided or match failed, try to guess container based on existing report structure
-                if (!targetId && report.results.length > 0) {
-                    targetId = report.results[0].testId?._id || report.results[0].testId;
+                // 1. Identify which test containers this parameter SHOULD belong to
+                // STRATEGY: Combine Template Matching + Metadata Context
+                let targetContainers = report.results.filter((res: any) => {
+                    const tidStr = (res.testId?._id || res.testId || "").toString();
+                    const testTemplate = booking.tests.find((bt: any) => bt._id.toString() === tidStr);
+                    return testTemplate?.parameters?.some((p: any) => p.name.toLowerCase() === incomingName);
+                });
+
+                if (targetContainers.length === 0) {
+                    // Use Metadata Context if individual testName is "Unknown"
+                    const effectiveTestName = (incoming.testName && incoming.testName !== "Unknown") 
+                        ? incoming.testName 
+                        : extractedTestMode;
+
+                    let targetId = findTargetId(effectiveTestName);
+                    if (targetId) {
+                        // Explicit test name found - find that container
+                        const tidStr = targetId.toString();
+                        const container = report.results.find((r: any) => (r.testId?._id || r.testId || "").toString() === tidStr);
+                        if (container) targetContainers.push(container);
+                    } else if (report.results.length > 0) {
+                        // Last resort: Fallback to the first container (legacy behavior)
+                        targetContainers = [report.results[0]];
+                    }
                 }
 
-                if (targetId) {
-                    const tidStr = targetId.toString();
-                    seenTests.add(tidStr);
+                if (targetContainers.length > 0) {
+                    targetContainers.forEach((targetContainer: any) => {
+                        const tidStr = (targetContainer.testId?._id || targetContainer.testId || "").toString();
+                        seenTests.add(tidStr);
 
-                    // 2. Find the container in our report results array that matches this ID
-                    const targetContainer = report.results.find((r: any) => (r.testId?._id || r.testId || "").toString() === tidStr);
-                    
-                    if (targetContainer) {
-                        // DEDUPLICATION SWEEP: Ensure this parameter DOES NOT exist in any other test bucket 
-                        // This is CRITICAL for multi-test reports to prevent "bleed-over"
+                        // DEDUPLICATION SWEEP: Ensure this parameter DOES NOT exist in other test buckets 
+                        // UNLESS it is also part of that test's defined parameters.
+                        // This prevents "bleed-over" for non-matching tests while allowing legitimate shared parameters.
                         report.results.forEach((res: any) => {
-                            if ((res.testId?._id || res.testId || "").toString() !== tidStr) {
-                                res.parameterResults = res.parameterResults.filter(
-                                    (p: any) => p.name.toLowerCase() !== incomingName
-                                );
+                            const otherTidStr = (res.testId?._id || res.testId || "").toString();
+                            if (otherTidStr !== tidStr) {
+                                // Check if this parameter name exists in the template of the OTHER test
+                                const otherTestTemplate = booking.tests.find((bt: any) => bt._id.toString() === otherTidStr);
+                                const isAllowedInOtherTest = otherTestTemplate?.parameters?.some((p: any) => p.name.toLowerCase() === incomingName);
+
+                                if (!isAllowedInOtherTest) {
+                                    res.parameterResults = res.parameterResults.filter(
+                                        (p: any) => p.name.toLowerCase() !== incomingName
+                                    );
+                                }
                             }
                         });
 
@@ -195,7 +249,7 @@ export async function POST(req: Request) {
                             });
                             updatedCount++;
                         }
-                    }
+                    });
                 }
             });
 
@@ -216,7 +270,7 @@ export async function POST(req: Request) {
                             await masterTest.save();
                         }
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
 
             // Clean up temporary tracking fields
