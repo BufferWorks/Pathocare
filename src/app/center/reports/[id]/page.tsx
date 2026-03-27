@@ -193,27 +193,18 @@ export default function PrintReportPage() {
                                                 <td className="p-2.5 w-1/4">
                                                     <div className="flex flex-col text-slate-900">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Specimen ID</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-[11px] font-black uppercase tracking-tighter text-blue-600 italic leading-none">{patient.barcode || "#NODE-REF"}</span>
-                                                            {report?.shareToken && (
-                                                                <img 
-                                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://pathocore.bufferworks.in/public/report/${report.shareToken}`)}`}
-                                                                    alt="QR"
-                                                                    className="w-6 h-6 grayscale contrast-125 opacity-70"
-                                                                />
-                                                            )}
-                                                        </div>
+                                                        <span className="text-[11px] font-black uppercase tracking-tighter text-blue-600 italic leading-none">{patient.barcode || "#NODE-REF"}</span>
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                             <tr>
+                                                <td className="p-2.5 w-1/4 border-r border-slate-200">
                                                     <div className="flex flex-col text-slate-900">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Ref By Dr.</span>
                                                         <span className="text-[10px] font-black text-blue-600 uppercase italic tracking-tighter leading-none">{patient.referralName || "Self Consultant"}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                                <td className="p-2.5 w-1/4 border-r border-slate-200">
                                                     <div className="flex flex-col text-slate-900">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Sample Date</span>
                                                         <span className="text-[10px] font-black uppercase italic leading-none">
@@ -221,13 +212,26 @@ export default function PrintReportPage() {
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="p-2.5 w-1/3 text-slate-900">
+                                                <td className="p-2.5 w-1/4 border-r border-slate-200 text-slate-900">
                                                     <div className="flex flex-col">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Report Date</span>
                                                         <span className="text-[10px] font-black uppercase italic tracking-tighter leading-none">
-                                                            {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}
+                                                            {report.updatedAt ? new Date(report.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '---'}
                                                         </span>
                                                     </div>
+                                                </td>
+                                                <td className="p-1 w-1/4 text-center">
+                                                    {/* PROPER PLACE FOR QR CODE */}
+                                                    {report?.shareToken && (
+                                                        <div className="flex flex-col items-center justify-center gap-0.5">
+                                                            <img 
+                                                                src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://pathocore.bufferworks.in/public/report/${report.shareToken}`)}`}
+                                                                alt="QR"
+                                                                className="w-8 h-8 grayscale contrast-125 opacity-70"
+                                                            />
+                                                            <span className="text-[5px] font-black text-slate-300 uppercase tracking-tighter italic">Scan to verify</span>
+                                                        </div>
+                                                    )}
                                                 </td>
                                             </tr>
                                         </tbody>
