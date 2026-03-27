@@ -145,14 +145,6 @@ export default function PrintReportPage() {
                                                     <h1 className="text-2xl font-[1000] tracking-tighter text-slate-900 uppercase leading-none italic">
                                                         {center?.name || "Standard Diagnostic Center"}
                                                     </h1>
-                                                    {/* REPORT VALIDATION QR CODE */}
-                                                    {report?.shareToken && (
-                                                        <img 
-                                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://pathocore.bufferworks.in/public/report/${report.shareToken}`)}`}
-                                                            alt="QR"
-                                                            className="w-8 h-8 grayscale contrast-125 opacity-70"
-                                                        />
-                                                    )}
                                                 </div>
                                                 <p className="text-blue-600 font-bold uppercase text-[8px] tracking-widest mb-2 italic">
                                                     {center?.tagline || "Advanced Laboratory Medicine & Research"}
@@ -201,7 +193,16 @@ export default function PrintReportPage() {
                                                 <td className="p-2.5 w-1/4">
                                                     <div className="flex flex-col text-slate-900">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Specimen ID</span>
-                                                        <span className="text-[11px] font-black uppercase tracking-tighter text-blue-600 italic leading-none">{patient.barcode || "#NODE-REF"}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[11px] font-black uppercase tracking-tighter text-blue-600 italic leading-none">{patient.barcode || "#NODE-REF"}</span>
+                                                            {report?.shareToken && (
+                                                                <img 
+                                                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://pathocore.bufferworks.in/public/report/${report.shareToken}`)}`}
+                                                                    alt="QR"
+                                                                    className="w-6 h-6 grayscale contrast-125 opacity-70"
+                                                                />
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
