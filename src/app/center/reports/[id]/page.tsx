@@ -164,14 +164,9 @@ export default function PrintReportPage() {
                                         </div>
                                     </div>
                                 )}
-                            </td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                {/* 2. Patient & Sample Matrix */}
-                                <div className="report-section border border-slate-200 rounded-xl overflow-hidden mb-10 bg-slate-50/30">
+
+                                {/* 2. Repeating Patient & Sample Matrix */}
+                                <div className="report-section border border-slate-200 rounded-xl overflow-hidden mb-8 bg-slate-50/30">
                                     <table className="w-full text-left border-collapse">
                                         <tbody>
                                             <tr className="border-b border-slate-200">
@@ -223,17 +218,28 @@ export default function PrintReportPage() {
                                         </tbody>
                                     </table>
                                 </div>
-
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody className="print:pt-4">
+                        <tr>
+                            <td>
                                 {/* 3. Investigation Results */}
-                                <div className="space-y-12 mb-16">
+                                <div className="space-y-0 mb-16">
                                     {(report?.results || []).map((test: any, idx: number) => (
-                                        <div key={idx} className="report-section px-2">
-                                            <div className="bg-slate-900 text-white px-5 py-2.5 flex justify-between items-center rounded-sm mb-6">
+                                        <div 
+                                            key={idx} 
+                                            className={cn(
+                                                "px-2 pb-12",
+                                                idx > 0 ? "print:pt-10 print:[page-break-before:always] pt-20" : "pt-4"
+                                            )}
+                                        >
+                                            <div className="bg-slate-900 text-white px-5 py-2.5 flex justify-between items-center rounded-sm mb-6 print:mb-4">
                                                 <h2 className="text-[12px] font-black uppercase tracking-[0.2em]">{test.testId?.name}</h2>
                                             </div>
 
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full text-left">
+                                            <div className="overflow-x-auto print:overflow-visible">
+                                                <table className="w-full text-left report-section">
                                                     <thead>
                                                         <tr className="border-b-2 border-slate-900">
                                                             <th className="py-2.5 text-[10px] font-black uppercase text-slate-600 tracking-wider">Investigation</th>
@@ -244,20 +250,15 @@ export default function PrintReportPage() {
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-100">
                                                         {(test.parameterResults || []).filter((p: any) => p.value).map((res: any, pIdx: number) => (
-                                                            <tr key={pIdx} className="result-row group">
+                                                            <tr key={pIdx} className="result-row group break-inside-avoid">
                                                                 <td className="py-4 text-[12px] font-black text-slate-900 uppercase tracking-tight leading-tight italic relative">
                                                                     {res.name}
-                                                                    {res.status === "Digital Handshake Completed" && (
-                                                                        <span className="absolute left-[-15px] top-1/2 -translate-y-1/2 text-blue-500/30 print:hidden">
-                                                                            <Zap size={10} fill="currentColor" />
-                                                                        </span>
-                                                                    )}
                                                                 </td>
                                                                 <td className="py-4 text-center text-[15px] font-[900] text-slate-900 tracking-tighter italic">
                                                                     <div className="flex flex-col items-center">
                                                                         <span>{res.value || "---"}</span>
                                                                         {res.status === "Digital Handshake Completed" && (
-                                                                            <span className="text-[6px] font-black uppercase tracking-[0.2em] text-blue-500 opacity-40 mt-1 leading-none">Synced Node</span>
+                                                                            <span className="text-[6px] font-black uppercase tracking-[0.2em] text-blue-500 opacity-40 mt-1 leading-none print:hidden">Synced Node</span>
                                                                         )}
                                                                     </div>
                                                                 </td>
@@ -278,7 +279,7 @@ export default function PrintReportPage() {
                                                 </table>
                                             </div>
 
-                                            <div className="mt-4 border-l-3 border-blue-600 pl-4 py-1">
+                                            <div className="mt-4 border-l-3 border-blue-600 pl-4 py-1 break-inside-avoid">
                                                 <p className="text-[9px] font-black text-slate-400 leading-relaxed uppercase italic tracking-wide">
                                                     Interpretation: Clinical findings must be correlated. All laboratory reports have technical limitations.
                                                 </p>
@@ -286,7 +287,6 @@ export default function PrintReportPage() {
                                         </div>
                                     ))}
                                 </div>
-
                             </td>
                         </tr>
                     </tbody>
