@@ -25,6 +25,20 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             .lean();
 
         if (report) {
+            // NEW: Ensure report has a shareToken for QR code functionality
+            if (!report.shareToken) {
+                const crypto = require('crypto');
+                const newToken = crypto.randomBytes(16).toString('hex');
+                await Report.updateOne({ _id: report._id }, { 
+                    $set: { 
+                        shareToken: newToken,
+                        shareExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+                    } 
+                });
+                report.shareToken = newToken;
+                console.log(`SECURE: Generated new shareToken for report ${report._id}`);
+            }
+
             // FIX: Self-healing for empty parameterResults
             let modified = false;
             for (let testRes of report.results) {

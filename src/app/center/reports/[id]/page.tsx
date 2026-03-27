@@ -141,9 +141,22 @@ export default function PrintReportPage() {
                                                 </div>
                                             )}
                                             <div>
-                                                <h1 className="text-2xl font-[900] tracking-tight text-slate-900 uppercase leading-none mb-1">
-                                                    {center?.name || "Standard Diagnostic Center"}
-                                                </h1>
+                                                <div className="flex items-center gap-6">
+                                                    <h1 className="text-2xl font-[1000] tracking-tighter text-slate-900 uppercase leading-none italic">
+                                                        {center?.name || "Standard Diagnostic Center"}
+                                                    </h1>
+                                                    {/* REPORT VALIDATION QR CODE */}
+                                                    {report?.shareToken && (
+                                                        <div className="flex flex-col items-center">
+                                                            <img 
+                                                                src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://pathocore.bufferworks.in/public/report/${report.shareToken}`)}`}
+                                                                alt="QR"
+                                                                className="w-12 h-12 grayscale contrast-125"
+                                                            />
+                                                            <span className="text-[5px] font-black opacity-30 uppercase tracking-tighter italic">Scan to Verify</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                                 <p className="text-blue-600 font-bold uppercase text-[8px] tracking-widest mb-2 italic">
                                                     {center?.tagline || "Advanced Laboratory Medicine & Research"}
                                                 </p>
