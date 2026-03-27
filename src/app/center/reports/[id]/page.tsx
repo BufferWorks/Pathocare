@@ -130,13 +130,6 @@ export default function PrintReportPage() {
                             <td>
                                 <div className="print-header-spacer" />
 
-                {/* Final Report Document Architecture */}
-                <table className="print-container-table w-full">
-                    <thead>
-                        <tr>
-                            <td>
-                                <div className="print-header-spacer" />
-
                                 {center?.showHeader !== false && (
                                     <div className="flex justify-between items-start border-b-[2pt] border-blue-600 pb-4 mb-6 mt-2 report-section">
                                         <div className="flex gap-4 items-start">
