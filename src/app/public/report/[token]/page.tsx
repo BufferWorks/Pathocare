@@ -7,19 +7,13 @@ import {
     Download,
     Printer,
     ShieldCheck,
-    Clock,
     AlertCircle,
     Loader2,
-    MapPin,
-    Phone,
     Lock,
-    ChevronRight,
-    QrCode
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { cn } from "@/lib/utils";
 
 export default function PublicReportPage() {
     const { token } = useParams();
@@ -33,22 +27,19 @@ export default function PublicReportPage() {
     const [verifying, setVerifying] = useState(false);
     const [vError, setVError] = useState("");
 
-    const [downloading, setDownloading] = useState(false);
-    const reportRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
         async function fetchReport() {
             try {
                 const res = await fetch(`/api/public/report/${token}`);
                 const bData = await res.json();
                 if (!res.ok) {
-                    setError(bData.error || "Broadcast Interrupted");
+                    setError(bData.error || "Access Interrupted");
                     if (res.status === 410) setExpired(true);
                 } else {
                     setData(bData);
                 }
             } catch (err) {
-                setError("Terminal Link Severed: Failed to sync with central repository.");
+                setError("Failed to connect to central server.");
             } finally {
                 setLoading(false);
             }
@@ -70,382 +61,220 @@ export default function PublicReportPage() {
             }, 800);
         } else {
             setTimeout(() => {
-                setVError("Neural Hash Mismatch: Access Code Invalid.");
+                setVError("Verification Failed: Mobile number does not match record.");
                 setVerifying(false);
             }, 500);
         }
     };
 
-    /**
-     * INSTITUTIONAL MODULAR SYNTHESIS ENGINE
-     * Each test node gets its own dedicated clinical sheet.
-     * Prevents truncation and ensures 1:1 parity with departmental requirements.
-     */
-    const handleDownloadPDF = async () => {
-        const element = reportRef.current;
-        if (!element || !data?.report) return;
-
-        setDownloading(true);
-
-        const originalInlineStyles: Map<HTMLElement, string> = new Map();
-        const stylesheets = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'));
-        const originalSheetStates: boolean[] = stylesheets.map(s => (s as any).disabled);
-
-        try {
-            // STEP 1: DEEP-INLINE (Snapshot Layout)
-            const allElements = [element, ...Array.from(element.querySelectorAll('*'))] as HTMLElement[];
-
-            allElements.forEach(el => {
-                const computed = window.getComputedStyle(el);
-                originalInlineStyles.set(el, el.getAttribute('style') || "");
-
-                const props = [
-                    'display', 'position', 'top', 'left', 'right', 'bottom',
-                    'width', 'height', 'max-width', 'max-height', 'min-width', 'min-height',
-                    'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
-                    'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-                    'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width',
-                    'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style',
-                    'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color',
-                    'border-top-left-radius', 'border-top-right-radius', 'border-bottom-left-radius', 'border-bottom-right-radius',
-                    'background-color', 'color', 'font-size', 'font-weight', 'font-family',
-                    'text-align', 'text-transform', 'letter-spacing', 'line-height',
-                    'flex', 'flex-direction', 'align-items', 'justify-content', 'flex-wrap', 'flex-grow', 'flex-shrink',
-                    'grid-template-columns', 'grid-column', 'grid-row', 'gap', 'column-gap', 'row-gap',
-                    'opacity', 'visibility', 'box-shadow', 'z-index', 'vertical-align', 'text-decoration', 'box-sizing'
-                ];
-
-                props.forEach(prop => {
-                    let val = computed.getPropertyValue(prop);
-                    if (val.includes('oklch') || val.includes('lab') || val.includes('oklab') || val.includes('lch')) {
-                        if (prop.includes('background')) {
-                            // Detect Lightness for Clinical White/Gray fallbacks
-                            if (val.includes('0.9') || val.includes('95%') || val.includes('90%') || val.includes('1.0') || val.includes('0.8')) val = '#f8fafc';
-                            else if (val.includes('16, 185, 129')) val = '#10b981';
-                            else val = '#020617'; // Hard Fallback to Dark Slate for clinical headers
-                        } else {
-                            // Text logic
-                            if (val.includes('0.9') || val.includes('90%')) val = '#ffffff';
-                            else if (val.includes('0.1') || val.includes('10%') || val.includes('0.2')) val = '#020617';
-                            else val = '#000000';
-                        }
-                    }
-                    el.style.setProperty(prop, val);
-                });
-
-                if (el.classList.contains('report-page')) {
-                    el.style.setProperty('width', '800px', 'important');
-                    el.style.setProperty('margin', '0 auto', 'important');
-                    el.style.setProperty('box-shadow', 'none', 'important');
-                    el.style.setProperty('border', 'none', 'important');
-                    el.style.setProperty('padding', '40px', 'important');
-                    el.style.setProperty('box-sizing', 'border-box', 'important');
-                    el.style.setProperty('background-color', '#ffffff', 'important');
-                }
-            });
-
-            // STEP 2: NUCLEAR DISABLE
-            stylesheets.forEach(s => (s as any).disabled = true);
-
-            // STEP 3: MODULAR CAPTURE (One Test Per Page)
-            const pdf = new jsPDF("p", "mm", "a4");
-            const testCount = data.report.results.length;
-
-            for (let i = 0; i < testCount; i++) {
-                const canvas = await html2canvas(element, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: "#ffffff",
-                    logging: false,
-                    windowWidth: 850,
-                    onclone: (clonedDoc) => {
-                        const clonedPage = clonedDoc.querySelector('.report-page') as HTMLElement;
-                        if (!clonedPage) return;
-
-                        // Isolate the target test item
-                        const testItems = clonedPage.querySelectorAll('.report-test-item');
-                        testItems.forEach((item: any, idx) => {
-                            if (idx !== i) {
-                                item.style.display = 'none';
-                            }
-                        });
-                    }
-                });
-
-                const imgData = canvas.toDataURL("image/jpeg", 0.95);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeightRatio = (canvas.height * pdfWidth) / canvas.width;
-
-                // Add to PDF
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeightRatio, undefined, 'FAST');
-
-                if (i < testCount - 1) {
-                    pdf.addPage();
-                }
-            }
-
-            // STEP 4: RESTORATION
-            stylesheets.forEach((s, i) => (s as any).disabled = originalSheetStates[i]);
-            allElements.forEach(el => {
-                const original = originalInlineStyles.get(el);
-                if (original) el.setAttribute('style', original);
-                else el.removeAttribute('style');
-            });
-
-            const ptName = (data.report.bookingId.patientName || "REPORT").replace(/\s+/g, '_').toUpperCase();
-            pdf.save(`REPORT_${ptName}.pdf`);
-
-        } catch (err) {
-            console.error("Critical HUB Error:", err);
-            stylesheets.forEach((s, i) => (s as any).disabled = originalSheetStates[i]);
-            alert("Digital Synthesis Hub Interrupted. Parity Mismatch. Use 'PRINT' -> 'Save as PDF'.");
-        } finally {
-            setDownloading(false);
-        }
-    };
-
     if (loading) {
         return (
-            <div className="h-screen bg-slate-950 flex flex-col items-center justify-center p-10 gap-8">
-                <Loader2 className="w-16 h-16 text-emerald-500 animate-spin" />
-                <p className="text-emerald-500/40 font-black uppercase text-[10px] tracking-[0.4em]">Decryption Matrix Initializing...</p>
+            <div className="h-screen bg-slate-50 flex flex-col items-center justify-center p-10 gap-8">
+                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em]">Initializing Diagnostic Link...</p>
             </div>
         );
     }
 
     if (error || expired) {
         return (
-            <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-8 gap-8 text-center">
-                <div className="w-24 h-24 rounded-[2.5rem] bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
-                    <AlertCircle size={48} />
+            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 gap-8 text-center">
+                <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                    <AlertCircle size={40} />
                 </div>
-                <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter">
-                    {expired ? "Signal Expired" : "Access Denied"}
+                <h2 className="text-2xl font-black text-slate-800 uppercase italic tracking-tighter">
+                    {expired ? "Access Expired" : "Access Denied"}
                 </h2>
-                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest max-w-md mx-auto">
-                    {expired ? "Ephemeral clinical window closed for privacy." : `Fault: ${error}`}
+                <p className="text-slate-500 font-medium text-sm max-w-md mx-auto">
+                    {expired ? "This electronic clinical window has closed for security." : `Issue: ${error}`}
                 </p>
+                <Button onClick={() => window.location.reload()} className="h-14 px-8 rounded-xl bg-slate-900 text-white font-bold uppercase text-[10px] tracking-widest">Retry Link</Button>
             </div>
         );
     }
 
     if (!isVerified) {
         return (
-            <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent">
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md bg-white/5 p-10 md:p-14 rounded-[4rem] border border-white/10 backdrop-blur-3xl shadow-4xl space-y-10">
-                    <div className="flex flex-col items-center gap-6">
-                        <div className="w-20 h-20 rounded-[2rem] bg-emerald-500 flex items-center justify-center text-white shadow-2xl">
-                            <Lock size={32} />
+            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-slate-100 space-y-8">
+                    <div className="flex flex-col items-center gap-4 text-center">
+                        <div className="w-16 h-16 rounded-[1.5rem] bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                            <Lock size={28} />
                         </div>
-                        <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter text-center">Security Matrix</h2>
+                        <div>
+                            <h2 className="text-2xl font-black text-slate-900 uppercase italic tracking-tighter leading-none mb-2">Secure Validation</h2>
+                            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-tight italic">Authentication Required to View Medical Report</p>
+                        </div>
                     </div>
                     <form onSubmit={handleVerify} className="space-y-6">
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-6 italic">Patient Mobile Number</label>
-                            <input type="tel" required value={mobileInput} onChange={(e) => setMobileInput(e.target.value)} className="w-full h-20 bg-white/5 border border-white/10 rounded-[2rem] px-8 text-xl font-black text-white outline-none focus:border-emerald-500/50 text-center" placeholder="00000 00000" />
+                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-4 italic">Confirm Patient Mobile Number</label>
+                            <input type="tel" required value={mobileInput} onChange={(e) => setMobileInput(e.target.value)} className="w-full h-16 bg-slate-50 border border-slate-200 rounded-2xl px-6 text-lg font-black text-slate-900 outline-none focus:border-blue-600/50 text-center transition-all" placeholder="Enter Registered Mobile" />
                         </div>
-                        {vError && <p className="text-red-500 text-center font-black uppercase text-[10px] tracking-widest italic">{vError}</p>}
-                        <Button type="submit" disabled={verifying} className="w-full h-20 rounded-[2rem] bg-emerald-500 text-white font-black uppercase text-lg tracking-widest shadow-3xl">
-                            {verifying ? <Loader2 className="animate-spin" /> : "Unlock Portal"}
+                        {vError && <p className="text-red-500 text-center font-bold uppercase text-[9px] tracking-tight italic bg-red-50 py-2 rounded-lg">{vError}</p>}
+                        <Button type="submit" disabled={verifying} className="w-full h-16 rounded-2xl bg-blue-600 text-white font-black uppercase text-sm tracking-widest shadow-xl hover:bg-blue-700 active:scale-95 transition-all">
+                            {verifying ? <Loader2 className="animate-spin" /> : "Verify & View Report"}
                         </Button>
                     </form>
+                    <p className="text-center text-[8px] text-slate-300 font-bold uppercase tracking-widest italic pt-4">Diagnostic Verification Matrix • Secure Channel</p>
                 </motion.div>
             </div>
         );
     }
 
     const report = data.report;
-    const booking = report.bookingId;
+    const patient = report.bookingId;
     const center = data.center;
 
     return (
-        <div className="min-h-screen bg-slate-100 py-10 px-4 md:py-20 flex flex-col items-center">
-            <div className="w-full max-w-[850px] flex justify-between items-center p-6 bg-white rounded-2xl shadow-xl border border-slate-200 mb-8 sticky top-4 z-50 print:hidden">
-                <h1 className="text-lg font-black text-slate-900 uppercase tracking-tighter italic">Diagnostic Viewing Node</h1>
-                <div className="flex gap-3">
-                    <Button onClick={() => window.print()} variant="outline" className="rounded-xl h-14 px-6 border-slate-200 font-black uppercase text-[10px] tracking-widest">
-                        <Printer className="mr-2 w-4 h-4" /> Print
-                    </Button>
-                    <Button onClick={handleDownloadPDF} disabled={downloading} className="rounded-xl h-14 px-8 bg-emerald-500 text-white font-black uppercase text-[10px] tracking-widest shadow-2xl">
-                        {downloading ? <Loader2 className="animate-spin" /> : <Download className="mr-2 w-5 h-5" />}
-                        {downloading ? "Formatting..." : "Download Official PDF"}
+        <div className="min-h-screen bg-slate-100 py-6 md:py-12 px-4 flex flex-col items-center">
+            {/* Control Bar */}
+            <div className="w-full max-w-[850px] flex justify-between items-center p-4 md:p-6 bg-white rounded-2xl shadow-xl border border-slate-200 mb-6 md:mb-10 sticky top-4 z-50 print:hidden overflow-hidden">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 grayscale">
+                        <ShieldCheck size={20} />
+                    </div>
+                    <div>
+                        <h1 className="text-xs md:text-sm font-black text-slate-900 uppercase tracking-tighter italic leading-none">Diagnostic Validation Tool</h1>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest italic">Authenticity Verified</p>
+                    </div>
+                </div>
+                <div className="flex gap-2">
+                    <Button onClick={() => window.print()} variant="outline" className="rounded-xl h-10 md:h-12 px-4 md:px-6 border-slate-200 font-black uppercase text-[9px] tracking-widest hover:bg-slate-50">
+                        <Printer className="mr-2 w-3 h-3" /> Print
                     </Button>
                 </div>
             </div>
 
-            <div className="report-page bg-white p-6 md:p-14 shadow-4xl rounded-sm border border-slate-100" ref={reportRef}>
-                <div className="flex justify-between items-start border-b-[3pt] border-emerald-500 pb-10 mb-10">
-                    <div className="flex gap-8 items-start">
-                        {center?.logo ? <img src={center.logo} alt="Logo" className="w-24 h-24 object-contain" /> : <div className="w-20 h-20 rounded-[2rem] bg-emerald-500 flex items-center justify-center text-white shadow-xl"><Activity size={44} /></div>}
+            {/* The Report (Mimicking Printed Version) */}
+            <div className="w-full max-w-[850px] bg-white shadow-2xl rounded-sm border border-slate-100 overflow-hidden print:shadow-none print:border-none p-4 md:p-12 lg:p-16">
+                
+                {/* 1. Header Area */}
+                <div className="flex justify-between items-start border-b-[2.5pt] border-slate-900/10 pb-6 mb-8">
+                    <div className="flex gap-4 md:gap-8 items-start">
+                        {center?.logo ? (
+                            <img src={center.logo} alt="Logo" className="w-16 h-16 md:w-24 md:h-24 object-contain grayscale brightness-50" />
+                        ) : (
+                            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-slate-900 flex items-center justify-center text-white"><Activity size={32} /></div>
+                        )}
                         <div className="space-y-1">
-                            <h1 className="text-3xl font-[900] tracking-tighter text-slate-950 uppercase leading-none italic">{center?.name}</h1>
-                            <p className="text-emerald-500 font-bold uppercase text-[10px] tracking-[0.4em] italic leading-none pb-2">{center?.tagline || "Global Diagnostics Network"}</p>
-                            <div className="space-y-1 text-[9px] text-slate-500 font-black uppercase italic pt-1 border-t border-slate-100">
-                                <p className="flex items-center gap-2 max-w-[400px]"><MapPin size={10} className="text-emerald-500 min-w-[10px]" /> {center?.address}</p>
-                                <p className="flex items-center gap-2"><Phone size={10} className="text-emerald-500" /> {center?.phone} {center?.website && ` | ${center.website}`}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="text-right flex flex-col items-end gap-2">
-                        <div className="bg-slate-950 text-white px-4 py-2 rounded-lg inline-block">
-                             <span className="text-[10px] font-black tracking-widest uppercase italic">Diagnostic Node</span>
-                        </div>
-                        <div className="flex gap-1 h-8 opacity-20 mt-2">
-                            {[...Array(15)].map((_, i) => (
-                                <div key={i} className="w-[2px] bg-black h-full" style={{ width: i % 3 === 0 ? '3px' : '1.5px' }} />
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="border-[1.5pt] border-slate-200 rounded-[2.5rem] overflow-hidden mb-12 bg-slate-50 p-10 grid grid-cols-2 gap-12 relative">
-                    <div className="space-y-6 border-r border-slate-200 pr-12">
-                        <div className="grid grid-cols-[110px_1fr] gap-4 items-start">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic pt-1">Patient Name</span>
-                            <p className="text-[20px] font-[900] uppercase italic tracking-tighter text-slate-950 leading-none">{booking.patientName}</p>
-                        </div>
-                        <div className="grid grid-cols-[110px_1fr] gap-4 items-start pt-2 border-t border-slate-200/50">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Age / Gender</span>
-                            <p className="text-[15px] font-black uppercase italic text-slate-900 leading-none">{booking.age}Y / {booking.gender}</p>
-                        </div>
-                        <div className="grid grid-cols-[110px_1fr] gap-4 items-start pt-2 border-t border-slate-200/50">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Referred By</span>
-                            <p className="text-[15px] font-black uppercase italic text-emerald-600 leading-none">{booking.doctorId?.name || booking.referralName || "SELF"}</p>
-                        </div>
-                        <div className="flex gap-10 pt-6">
-                            <div className="space-y-1">
-                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic">Specimen Type</span>
-                                <p className="text-[11px] font-[800] uppercase italic text-slate-900 leading-none">{booking.sampleType || "WHOLE BLOOD / SERUM"}</p>
-                            </div>
-                            <div className="space-y-1 border-l border-slate-200 pl-10">
-                                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic">Client Unit</span>
-                                <p className="text-[11px] font-[800] uppercase italic text-slate-900 leading-none">{booking.clientCode || "DIRECT-WALKIN"}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-5 pl-4 flex flex-col justify-between">
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between bg-white px-6 py-4 rounded-2xl border border-slate-200 shadow-sm">
-                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">SAMPLE TRACK ID</span>
-                                <div className="flex items-center gap-4">
-                                    <p className="text-[16px] font-[950] text-slate-950 tracking-tight leading-none">{booking.barcode || "PC-NODEX-X"}</p>
-                                    <QrCode size={18} className="text-slate-300" />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-6 pt-4">
-                            <div className="space-y-3">
-                                <div className="space-y-0.5">
-                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic">Sample Drawn</span>
-                                    <p className="text-[10px] font-black text-slate-900 leading-none">{booking.sampleDrawnAt ? new Date(booking.sampleDrawnAt).toLocaleString() : "N/A"}</p>
-                                </div>
-                                <div className="space-y-0.5">
-                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic">Registered</span>
-                                    <p className="text-[10px] font-black text-slate-900 leading-none">{new Date(booking.createdAt).toLocaleString()}</p>
-                                </div>
-                            </div>
-                            <div className="space-y-3 border-l border-slate-200 pl-6">
-                                <div className="space-y-0.5">
-                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic">Collected At</span>
-                                    <p className="text-[10px] font-black text-slate-900 leading-none">{booking.collectedAt ? new Date(booking.collectedAt).toLocaleString() : "N/A"}</p>
-                                </div>
-                                <div className="space-y-0.5">
-                                    <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest italic">Final Report</span>
-                                    <p className="text-[10px] font-black text-emerald-600 leading-none italic">{report.updatedAt ? new Date(report.updatedAt).toLocaleString() : "PENDING"}</p>
-                                </div>
+                            <h1 className="text-xl md:text-3xl font-[1000] tracking-tighter text-slate-900 uppercase leading-none italic">{center?.name}</h1>
+                            <p className="text-blue-600 font-bold uppercase text-[8px] md:text-[10px] tracking-[0.3em] italic leading-none pb-2">{center?.tagline || "Advanced Laboratory Medicine"}</p>
+                            <div className="space-y-0.5 text-[8px] md:text-[9px] text-slate-500 font-black uppercase italic pt-1 border-t border-slate-100">
+                                <p className="flex items-center gap-2"><span className="text-blue-600 font-black">Address:</span> {center?.address}</p>
+                                <p className="flex items-center gap-2"><span className="text-blue-600 font-black">Contact:</span> {center?.phone}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-16 mb-20">
-                    {report.results.map((testRes: any, idx: number) => (
-                        <div key={idx} className="report-test-item space-y-8">
-                            <div className="bg-slate-950 text-white px-8 py-4 rounded-xl shadow-2xl flex justify-between items-center">
-                                <h2 className="text-[14px] font-black uppercase tracking-[0.3em] italic">{testRes.testId?.name}</h2>
-                                <span className="text-[10px] opacity-20 italic">NODE #0{idx + 1}</span>
+                {/* 2. Patient Identity Grid */}
+                <div className="border border-slate-200 rounded-2xl overflow-hidden mb-10 bg-slate-50/10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y divide-slate-200">
+                        <div className="p-4 flex flex-col">
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Patient Name</span>
+                            <span className="text-[14px] font-[1000] text-slate-900 uppercase italic leading-tight tracking-tight">{patient.patientName}</span>
+                        </div>
+                        <div className="p-4 flex flex-col">
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Contact / Phone</span>
+                            <span className="text-[11px] font-black text-slate-900 uppercase italic leading-tight">{patient.phone || "---"}</span>
+                        </div>
+                        <div className="p-4 flex flex-col">
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Age / Gender</span>
+                            <span className="text-[11px] font-black text-slate-900 uppercase italic leading-tight">{patient.age}Y / {patient.gender}</span>
+                        </div>
+                        <div className="p-4 flex flex-col">
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Specimen ID</span>
+                            <span className="text-[12px] font-black text-blue-600 uppercase tracking-tighter leading-tight italic">{patient.barcode || "#ONLINE"}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 3. Clinical Results */}
+                <div className="space-y-12 mb-16">
+                    {report.results.map((test: any, idx: number) => (
+                        <div key={idx} className="space-y-4">
+                            <div className="bg-slate-900 text-white px-5 py-2.5 rounded-lg flex justify-between items-center">
+                                <h2 className="text-[12px] md:text-[13px] font-black uppercase tracking-[0.25em] italic">{test.testId?.name}</h2>
+                                <span className="text-[8px] opacity-30 italic font-black uppercase">Report Section #{idx + 1}</span>
                             </div>
-                            <table className="w-full text-left">
-                                <thead className="border-b-2 border-slate-950">
-                                    <tr>
-                                        <th className="pb-4 text-[11px] font-black uppercase text-slate-500 tracking-widest italic">Molecule</th>
-                                        <th className="pb-4 text-center text-[11px] font-black uppercase text-slate-500 tracking-widest italic">Result Node</th>
-                                        <th className="pb-4 text-center text-[11px] font-black uppercase text-slate-500 tracking-widest italic">Units</th>
-                                        <th className="pb-4 text-center text-[11px] font-black uppercase text-slate-500 tracking-widest italic">Bio. Ref. Interval</th>
-                                        <th className="pb-4 text-right text-[11px] font-black uppercase text-slate-500 tracking-widest italic">Method</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {testRes.parameterResults.map((param: any, pIdx: number) => (
-                                        <tr key={pIdx}>
-                                            <td className="py-6 text-[13px] font-black text-slate-950 uppercase italic tracking-tighter">{param.name}</td>
-                                            <td className="py-6 text-center">
-                                                <span className={`text-[18px] font-[900] italic ${param.status === "High" || param.status === "Low" ? "text-red-600" : "text-slate-900"}`}>
-                                                    {param.value}
-                                                </span>
-                                            </td>
-                                            <td className="py-6 text-center text-[11px] font-bold text-slate-400 italic uppercase">{param.unit}</td>
-                                            <td className="py-6 text-center text-[11px] font-bold text-slate-600 tracking-tighter italic whitespace-pre-wrap max-w-[150px]">{param.normalRange}</td>
-                                            <td className="py-6 text-right text-[10px] font-bold text-slate-400 uppercase italic leading-tight">{testRes.method || testRes.testId?.method || "AUTOMATED SCAN"}</td>
+
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="border-b-2 border-slate-900">
+                                            <th className="py-2 text-[10px] font-black uppercase text-slate-500 tracking-widest italic">Investigation</th>
+                                            <th className="py-2 text-center text-[10px] font-black uppercase text-slate-500 tracking-widest italic">Result</th>
+                                            <th className="py-2 text-center text-[10px] font-black uppercase text-slate-500 tracking-widest italic">Units</th>
+                                            <th className="py-2 text-right text-[10px] font-black uppercase text-slate-500 tracking-widest italic whitespace-nowrap">Ref. Interval</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {(test.parameterResults || []).map((res: any, pIdx: number) => (
+                                            <tr key={pIdx}>
+                                                <td className="py-3.5 text-[12px] md:text-[13px] font-black text-slate-950 uppercase italic tracking-tighter">{res.name}</td>
+                                                <td className="py-3.5 text-center">
+                                                    <span className={cn(
+                                                        "text-[16px] md:text-[18px] font-[1000] italic leading-none",
+                                                        (res.status === "High" || res.status === "Low") ? "text-red-600 underline decoration-[1.5pt] underline-offset-4" : "text-slate-900"
+                                                    )}>
+                                                        {res.value || "---"}
+                                                    </span>
+                                                </td>
+                                                <td className="py-3.5 text-center text-[10px] md:text-[11px] font-bold text-slate-400 italic uppercase">{res.unit}</td>
+                                                <td className="py-3.5 text-right text-[10px] md:text-[11px] font-bold text-slate-600 tracking-tighter italic">{res.normalRange}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            {(testRes.interpretation || testRes.testId?.interpretation) && (
-                                <div className="bg-slate-50 border border-slate-100 p-8 rounded-3xl space-y-3">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">Clinical Interpretation</h4>
-                                    <p className="text-[11px] text-slate-600 italic leading-relaxed whitespace-pre-wrap font-medium">
-                                        {testRes.interpretation || testRes.testId?.interpretation}
-                                    </p>
+                            {/* Clinical Footer for Test */}
+                            <div className="mt-2 border-l-[3pt] border-blue-600 pl-4 py-2 bg-slate-50/50 rounded-r-xl">
+                                <p className="text-[10px] md:text-[11px] font-bold text-slate-500 italic leading-tight mb-2">Interpretation & Comments</p>
+                                <p className="text-[8px] md:text-[9px] font-black text-slate-400 leading-tight uppercase tracking-wide">
+                                    Clinical findings must be correlated. All laboratory reports have technical limitations. Authorized validation complete.
+                                </p>
+                            </div>
+
+                            {/* SIGNATURES FOR EACH TEST (Live from DB) */}
+                            {center?.signatories?.length > 0 && (
+                                <div className="mt-8 pt-8 border-t border-slate-100 grid grid-cols-2 gap-8 md:gap-16 px-4 md:px-12">
+                                    {center.signatories.map((sig: any, sIdx: number) => (
+                                        <div key={sIdx} className="text-center group">
+                                            <p className="font-serif italic text-slate-200 text-[9px] md:text-[10px] uppercase tracking-[0.4em] font-black group-hover:text-blue-500 transition-colors">Digitally Signed</p>
+                                            <div className="w-full h-px bg-slate-900/10 my-2" />
+                                            <p className="text-[12px] md:text-[14px] font-black uppercase text-slate-900 leading-none italic tracking-tight mb-1">{sig.name}</p>
+                                            <p className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase italic leading-none">{sig.designation}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
                     ))}
                 </div>
 
-                <div className="flex flex-col items-center py-20 gap-4 opacity-50">
-                    <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400 italic">*** End Of Report ***</p>
+                {/* Final Verification Badge */}
+                <div className="flex flex-col items-center py-12 md:py-20 border-t border-slate-100 gap-4 opacity-50 text-center">
+                    <ShieldCheck size={48} className="text-slate-900" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400 italic leading-none">*** End Of Diagnostic Document ***</p>
+                    <p className="text-[8px] font-bold text-slate-300 uppercase tracking-widest italic">{new Date().toLocaleString()}</p>
                 </div>
 
-                <div className="pt-12 border-t border-slate-100 flex justify-between items-end gap-16">
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="w-20 h-20 bg-slate-50 border border-slate-100 rounded-3xl flex items-center justify-center grayscale opacity-40"><ShieldCheck size={40} className="text-emerald-500" /></div>
-                        <span className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] text-center italic leading-tight">Digital Verification Node<br/>Security Matrix IDT-X</span>
-                    </div>
-                    <div className="text-center space-y-4">
-                        {center?.signatories?.[0] ? (
-                            <div className="text-center">
-                                <div className="h-10 border-b border-slate-100 min-w-[180px]"></div>
-                                <p className="text-[11px] font-black uppercase text-slate-950 italic pt-2">{center.signatories[0].name}</p>
-                                <p className="text-[9px] font-bold uppercase text-slate-400 italic">{center.signatories[0].designation}</p>
-                            </div>
-                        ) : (
-                            <div className="text-center">
-                                <div className="h-10 border-b border-slate-100 min-w-[180px]"></div>
-                                <p className="text-[11px] font-black uppercase text-slate-950 italic pt-2">Pathologist Signatory</p>
-                                <p className="text-[9px] font-bold uppercase text-slate-400 italic">Consultant MD (Pathology)</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="mt-16 flex justify-between items-center opacity-20 text-slate-500">
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em] italic">SECURE CLINICAL TRANSMISSION</span>
-                    <span className="text-[9px] font-black uppercase tracking-tight italic">TERMINATED ON EXPIRY</span>
+                {/* Final Disclaimer */}
+                <div className="mt-6 flex justify-between items-center opacity-30 text-slate-400 border-t border-slate-50 pt-4">
+                    <span className="text-[8px] font-black uppercase tracking-[0.3em] italic">SECURE CLINICAL TRANSMISSION</span>
+                    <span className="text-[8px] font-black uppercase tracking-tight italic">ENCRYPTED PORTAL</span>
                 </div>
             </div>
 
             <style jsx global>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-                body { font-family: 'Inter', sans-serif; background-color: #020617 !important; }
-                .report-page { width: 100%; max-width: 850px; box-shadow: 0 40px 150px -20px rgba(0,0,0,0.8); }
+                body { font-family: 'Inter', sans-serif; }
                 @media print {
+                    .print-hidden { display: none !important; }
                     body { background: white !important; }
-                    .report-page { box-shadow: none !important; margin: 0 !important; width: 100% !important; border: none !important; }
-                    .sticky { display: none !important; }
+                    .w-full { max-width: 100% !important; margin: 0 !important; border: none !important; shadow: none !important; }
                 }
             `}</style>
         </div>
