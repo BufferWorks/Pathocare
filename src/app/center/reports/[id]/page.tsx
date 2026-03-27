@@ -130,86 +130,91 @@ export default function PrintReportPage() {
                             <td>
                                 <div className="print-header-spacer" />
 
+                {/* Final Report Document Architecture */}
+                <table className="print-container-table w-full">
+                    <thead>
+                        <tr>
+                            <td>
+                                <div className="print-header-spacer" />
+
                                 {center?.showHeader !== false && (
-                                    <div className="flex justify-between items-start border-b-[3pt] border-blue-600 pb-8 mb-8 mt-4 report-section">
-                                        <div className="flex gap-6 items-start">
+                                    <div className="flex justify-between items-start border-b-[2pt] border-blue-600 pb-4 mb-6 mt-2 report-section">
+                                        <div className="flex gap-4 items-start">
                                             {center?.logo ? (
-                                                <img src={center.logo} alt="Lab Logo" className="w-24 h-24 object-contain" />
+                                                <img src={center.logo} alt="Lab Logo" className="w-16 h-16 object-contain" />
                                             ) : (
-                                                <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
-                                                    <Activity size={40} />
+                                                <div className="w-14 h-14 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                                                    <Activity size={30} />
                                                 </div>
                                             )}
                                             <div>
-                                                <h1 className="text-3xl font-[900] tracking-tight text-slate-900 uppercase leading-none mb-2">
+                                                <h1 className="text-2xl font-[900] tracking-tight text-slate-900 uppercase leading-none mb-1">
                                                     {center?.name || "Standard Diagnostic Center"}
                                                 </h1>
-                                                <p className="text-blue-600 font-bold uppercase text-[10px] tracking-widest mb-4 italic">
+                                                <p className="text-blue-600 font-bold uppercase text-[8px] tracking-widest mb-2 italic">
                                                     {center?.tagline || "Advanced Laboratory Medicine & Research"}
                                                 </p>
-                                                <div className="text-[10px] text-slate-500 font-medium leading-relaxed max-w-sm">
-                                                    <p className="flex items-center gap-1.5"><MapPin size={12} className="text-blue-600" /> {center?.address}</p>
-                                                    <p className="flex items-center gap-1.5 mt-1"><Phone size={12} className="text-blue-600" /> {center?.phone} | {center?.email || "reports@diagnostics.com"}</p>
+                                                <div className="text-[9px] text-slate-500 font-medium leading-tight max-w-sm">
+                                                    <p className="flex items-center gap-1.5"><MapPin size={10} className="text-blue-600" /> {center?.address}</p>
+                                                    <p className="flex items-center gap-1.5 mt-0.5"><Phone size={10} className="text-blue-600" /> {center?.phone} | {center?.email || "reports@diagnostics.com"}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-right flex flex-col items-end gap-3 pt-2">
-                                            <div className="bg-slate-100 px-3 py-1.5 rounded text-[9px] font-bold text-slate-500 border border-slate-200 uppercase tracking-widest">
+                                        <div className="text-right flex flex-col items-end gap-2 pt-1">
+                                            <div className="bg-slate-100 px-2 py-1 rounded text-[8px] font-bold text-slate-500 border border-slate-200 uppercase tracking-widest">
                                                 {center?.headerText || "ISO 9001:2015 CERTIFIED"}
                                             </div>
-                                            <div className="text-[10px] font-bold flex flex-col items-end gap-1">
-                                                <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-[8px]">NABL ACCREDITED</span>
-                                                <span className="text-slate-400 mt-1 uppercase tracking-tighter">MC-1234/5678</span>
+                                            <div className="text-[9px] font-bold flex flex-col items-end gap-0.5">
+                                                <span className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-[7px]">NABL ACCREDITED</span>
+                                                <span className="text-slate-400 uppercase tracking-tighter text-[7px]">MC-1234/5678</span>
                                             </div>
                                         </div>
                                     </div>
                                 )}
 
-                                {/* 2. Repeating Patient & Sample Matrix */}
-                                <div className="report-section border border-slate-200 rounded-xl overflow-hidden mb-8 bg-slate-50/30">
+                                {/* 2. Repeating Patient & Sample Matrix - COMPACT VERSION */}
+                                <div className="report-section border border-slate-200 rounded-lg overflow-hidden mb-6 bg-slate-50/20">
                                     <table className="w-full text-left border-collapse">
                                         <tbody>
                                             <tr className="border-b border-slate-200">
-                                                <td className="p-4 w-1/2 border-r border-slate-200">
-                                                    <div className="grid grid-cols-[110px,1fr] gap-2 items-baseline text-slate-900">
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Patient Name</span>
-                                                        <span className="text-[14px] font-[900] uppercase italic tracking-tight leading-none">{patient.patientName}</span>
+                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                                    <div className="flex flex-col text-slate-900">
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Patient Name</span>
+                                                        <span className="text-[12px] font-[900] uppercase italic tracking-tight leading-none">{patient.patientName}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-4 w-1/2">
-                                                    <div className="grid grid-cols-[110px,1fr] gap-2 items-baseline text-slate-900">
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Specimen ID</span>
-                                                        <span className="text-[12px] font-black uppercase tracking-tighter text-blue-600 italic">{patient.barcode || "#NODE-REF"}</span>
+                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                                    <div className="flex flex-col text-slate-900">
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Age / Gender</span>
+                                                        <span className="text-[10px] font-black uppercase italic">{patient.age}Y / {patient.gender}</span>
                                                     </div>
                                                 </td>
-                                            </tr>
-                                            <tr className="border-b border-slate-200">
-                                                <td className="p-4 w-1/2 border-r border-slate-200">
-                                                    <div className="grid grid-cols-[110px,1fr] gap-2 items-baseline text-slate-900">
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Age / Gender</span>
-                                                        <span className="text-[11px] font-black uppercase italic">{patient.age}Y / {patient.gender}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4 w-1/2">
-                                                    <div className="grid grid-cols-[110px,1fr] gap-2 items-baseline text-slate-900">
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sample Date</span>
-                                                        <span className="text-[11px] font-black uppercase italic leading-none">
-                                                            {patient.bookingDate ? new Date(patient.bookingDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '---'}
-                                                        </span>
+                                                <td className="p-2.5 w-1/3">
+                                                    <div className="flex flex-col text-slate-900">
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Specimen ID</span>
+                                                        <span className="text-[11px] font-black uppercase tracking-tighter text-blue-600 italic">{patient.barcode || "#NODE-REF"}</span>
                                                     </div>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td className="p-4 w-1/2 border-r border-slate-200">
-                                                    <div className="grid grid-cols-[110px,1fr] gap-2 items-baseline text-slate-900">
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ref By Dr.</span>
-                                                        <span className="text-[11px] font-black text-blue-600 uppercase italic tracking-tighter leading-none">{patient.referralName || "Self Consultant"}</span>
+                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                                    <div className="flex flex-col text-slate-900">
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Ref By Dr.</span>
+                                                        <span className="text-[10px] font-black text-blue-600 uppercase italic tracking-tighter leading-none">{patient.referralName || "Self Consultant"}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-4 w-1/2 text-slate-900">
-                                                    <div className="grid grid-cols-[110px,1fr] gap-2 items-baseline">
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Report Date</span>
-                                                        <span className="text-[11px] font-black uppercase italic tracking-tighter leading-none">
+                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                                    <div className="flex flex-col text-slate-900">
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Sample Date</span>
+                                                        <span className="text-[10px] font-black uppercase italic leading-none">
+                                                            {patient.bookingDate ? new Date(patient.bookingDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '---'}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-2.5 w-1/3 text-slate-900">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Report Date</span>
+                                                        <span className="text-[10px] font-black uppercase italic tracking-tighter leading-none">
                                                             {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}
                                                         </span>
                                                     </div>
@@ -221,53 +226,48 @@ export default function PrintReportPage() {
                             </td>
                         </tr>
                     </thead>
-                    <tbody className="print:pt-4">
+                    <tbody className="print:pt-2">
                         <tr>
                             <td>
                                 {/* 3. Investigation Results */}
-                                <div className="space-y-0 mb-16">
+                                <div className="space-y-0 mb-8">
                                     {(report?.results || []).map((test: any, idx: number) => (
                                         <div 
                                             key={idx} 
                                             className={cn(
-                                                "px-2 pb-12",
-                                                idx > 0 ? "print:pt-10 print:[page-break-before:always] pt-20" : "pt-4"
+                                                "px-2 pb-8 break-inside-avoid",
+                                                idx > 0 && "print:[page-break-before:always]"
                                             )}
                                         >
-                                            <div className="bg-slate-900 text-white px-5 py-2.5 flex justify-between items-center rounded-sm mb-6 print:mb-4">
-                                                <h2 className="text-[12px] font-black uppercase tracking-[0.2em]">{test.testId?.name}</h2>
+                                            <div className="bg-slate-900 text-white px-4 py-2 flex justify-between items-center rounded-sm mb-4 print:mb-2">
+                                                <h2 className="text-[11px] font-black uppercase tracking-[0.2em]">{test.testId?.name}</h2>
                                             </div>
 
                                             <div className="overflow-x-auto print:overflow-visible">
-                                                <table className="w-full text-left report-section">
+                                                <table className="w-full text-left">
                                                     <thead>
                                                         <tr className="border-b-2 border-slate-900">
-                                                            <th className="py-2.5 text-[10px] font-black uppercase text-slate-600 tracking-wider">Investigation</th>
-                                                            <th className="py-2.5 text-center text-[10px] font-black uppercase text-slate-600 tracking-wider">Observed Value</th>
-                                                            <th className="py-2.5 text-center text-[10px] font-black uppercase text-slate-600 tracking-wider">Units</th>
-                                                            <th className="py-2.5 text-right text-[10px] font-black uppercase text-slate-600 tracking-wider">Ref. Interval</th>
+                                                            <th className="py-2 text-[9px] font-black uppercase text-slate-600 tracking-wider">Investigation</th>
+                                                            <th className="py-2 text-center text-[9px] font-black uppercase text-slate-600 tracking-wider">Observed Value</th>
+                                                            <th className="py-2 text-center text-[9px] font-black uppercase text-slate-600 tracking-wider">Units</th>
+                                                            <th className="py-2 text-right text-[9px] font-black uppercase text-slate-600 tracking-wider">Ref. Interval</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-100">
                                                         {(test.parameterResults || []).filter((p: any) => p.value).map((res: any, pIdx: number) => (
                                                             <tr key={pIdx} className="result-row group break-inside-avoid">
-                                                                <td className="py-4 text-[12px] font-black text-slate-900 uppercase tracking-tight leading-tight italic relative">
+                                                                <td className="py-2.5 text-[11px] font-black text-slate-900 uppercase tracking-tight leading-tight italic">
                                                                     {res.name}
                                                                 </td>
-                                                                <td className="py-4 text-center text-[15px] font-[900] text-slate-900 tracking-tighter italic">
-                                                                    <div className="flex flex-col items-center">
-                                                                        <span>{res.value || "---"}</span>
-                                                                        {res.status === "Digital Handshake Completed" && (
-                                                                            <span className="text-[6px] font-black uppercase tracking-[0.2em] text-blue-500 opacity-40 mt-1 leading-none print:hidden">Synced Node</span>
-                                                                        )}
-                                                                    </div>
+                                                                <td className="py-2.5 text-center text-[13px] font-[900] text-slate-900 tracking-tighter italic">
+                                                                    <span>{res.value || "---"}</span>
                                                                 </td>
-                                                                <td className="py-4 text-center text-[11px] font-bold text-slate-400 italic uppercase">
+                                                                <td className="py-2.5 text-center text-[10px] font-bold text-slate-400 italic uppercase">
                                                                     {res.unit}
                                                                 </td>
-                                                                <td className="py-4 text-right text-[11px] font-bold text-slate-600 tracking-tighter italic whitespace-nowrap">
+                                                                <td className="py-2.5 text-right text-[10px] font-bold text-slate-600 tracking-tighter italic whitespace-nowrap">
                                                                     <span className={cn(
-                                                                        "px-2 py-1 rounded-md",
+                                                                        "px-1.5 py-0.5 rounded-md",
                                                                         res.value && res.normalRange ? "bg-slate-50" : ""
                                                                     )}>
                                                                         {res.normalRange}
@@ -279,8 +279,8 @@ export default function PrintReportPage() {
                                                 </table>
                                             </div>
 
-                                            <div className="mt-4 border-l-3 border-blue-600 pl-4 py-1 break-inside-avoid">
-                                                <p className="text-[9px] font-black text-slate-400 leading-relaxed uppercase italic tracking-wide">
+                                            <div className="mt-3 border-l-2 border-blue-600 pl-3 py-0.5 break-inside-avoid">
+                                                <p className="text-[8px] font-black text-slate-400 leading-tight uppercase italic tracking-wide">
                                                     Interpretation: Clinical findings must be correlated. All laboratory reports have technical limitations.
                                                 </p>
                                             </div>
@@ -295,61 +295,61 @@ export default function PrintReportPage() {
                             <td>
                                 <div className="print-footer-spacer" />
                                 {center?.showFooter !== false && (
-                                    <div className="pt-8 border-t-2 border-slate-900 mb-6 report-section">
-                                        <div className="grid grid-cols-3 items-end gap-12 px-6 mb-12">
+                                    <div className="pt-6 border-t-[2pt] border-slate-900 mb-4 report-section">
+                                        <div className="grid grid-cols-3 items-end gap-8 px-4 mb-8">
                                             {/* Verification Node */}
-                                            <div className="flex flex-col items-center gap-3">
-                                                <div className="w-24 h-24 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center p-2 relative group grayscale">
-                                                    <ShieldCheck className="text-slate-300 opacity-40" size={48} />
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div className="w-20 h-20 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center p-2 relative group grayscale">
+                                                    <ShieldCheck className="text-slate-300 opacity-40" size={40} />
                                                 </div>
-                                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest text-center leading-tight">Authentic Secure<br />Report Verification</p>
+                                                <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest text-center leading-tight">Authentic Secure<br />Report Verification</p>
                                             </div>
 
                                             {/* Signatures */}
                                             {center?.signatories?.length > 0 ? (
-                                                <div className="col-span-2 grid grid-cols-2 gap-12">
+                                                <div className="col-span-2 grid grid-cols-2 gap-8">
                                                     {center.signatories.map((sig: any, sIdx: number) => (
                                                         <div key={sIdx} className="text-center">
-                                                            <div className="h-12 flex items-center justify-center mb-2">
-                                                                <p className="font-serif italic text-slate-300 text-[13px] opacity-40">Digitally Verified</p>
+                                                            <div className="h-10 flex items-center justify-center mb-1">
+                                                                <p className="font-serif italic text-slate-300 text-[11px] opacity-40">Digitally Verified</p>
                                                             </div>
-                                                            <div className="w-full h-px bg-slate-200 mb-3" />
-                                                            <p className="text-[11px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-1">{sig.name}</p>
-                                                            <p className="text-[8px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">{sig.designation}</p>
+                                                            <div className="w-full h-px bg-slate-200 mb-2" />
+                                                            <p className="text-[10px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-0.5">{sig.name}</p>
+                                                            <p className="text-[7px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">{sig.designation}</p>
                                                         </div>
                                                     ))}
                                                 </div>
                                             ) : (
                                                 <>
                                                     <div className="text-center">
-                                                        <div className="h-12 flex items-center justify-center mb-2">
-                                                            <p className="font-serif italic text-slate-300 text-[13px] opacity-40">Digitally Verified</p>
+                                                        <div className="h-10 flex items-center justify-center mb-1">
+                                                            <p className="font-serif italic text-slate-300 text-[11px] opacity-40">Digitally Verified</p>
                                                         </div>
-                                                        <div className="w-full h-px bg-slate-200 mb-3" />
-                                                        <p className="text-[11px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-1">Senior Lab Specialist</p>
-                                                        <p className="text-[8px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">Verification Node ID: 4521/TR</p>
+                                                        <div className="w-full h-px bg-slate-200 mb-2" />
+                                                        <p className="text-[10px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-0.5">Senior Lab Specialist</p>
+                                                        <p className="text-[7px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">Verification Node ID: 4521/TR</p>
                                                     </div>
 
                                                     <div className="text-center">
-                                                        <div className="h-12 flex items-center justify-center mb-2">
-                                                            <p className="font-serif italic text-slate-300 text-[13px] opacity-40">Authorized Signatory</p>
+                                                        <div className="h-10 flex items-center justify-center mb-1">
+                                                            <p className="font-serif italic text-slate-300 text-[11px] opacity-40">Authorized Signatory</p>
                                                         </div>
-                                                        <div className="w-full h-px bg-slate-900 mb-3" />
-                                                        <p className="text-[11px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-1">MD Pathologist (Consultant)</p>
-                                                        <p className="text-[8px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">Council Reg: MC-12344/5</p>
+                                                        <div className="w-full h-px bg-slate-900 mb-2" />
+                                                        <p className="text-[10px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-0.5">MD Pathologist (Consultant)</p>
+                                                        <p className="text-[7px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">Council Reg: MC-12344/5</p>
                                                     </div>
                                                 </>
                                             )}
                                         </div>
 
-                                        <div className="flex justify-between items-center px-6 opacity-40 text-slate-500">
+                                        <div className="flex justify-between items-center px-4 opacity-40 text-slate-500">
                                             <div className="flex items-center gap-2">
-                                                <ShieldCheck size={14} className="text-blue-600 opacity-60" />
-                                                <span className="text-[8.5px] font-black uppercase tracking-[0.2em] italic leading-none whitespace-nowrap">
+                                                <ShieldCheck size={12} className="text-blue-600 opacity-60" />
+                                                <span className="text-[7.5px] font-black uppercase tracking-[0.2em] italic leading-none whitespace-nowrap">
                                                     {center?.footerText || "Diagnostic Intelligence Grid • Secure HIPAA Compliant Transmission"}
                                                 </span>
                                             </div>
-                                            <p className="text-[9px] font-black uppercase tracking-tighter italic leading-none whitespace-nowrap">Diagnostic Transmission • Node Verified</p>
+                                            <p className="text-[8px] font-black uppercase tracking-tighter italic leading-none whitespace-nowrap">Diagnostic Transmission • Node Verified</p>
                                         </div>
                                     </div>
                                 )}
