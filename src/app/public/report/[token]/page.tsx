@@ -158,8 +158,16 @@ export default function PublicReportPage() {
                             <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-slate-900 flex items-center justify-center text-white"><Activity size={32} /></div>
                         )}
                         <div className="space-y-1">
-                            <h1 className="text-xl md:text-3xl font-[1000] tracking-tighter text-slate-900 uppercase leading-none italic">{center?.name}</h1>
-                            <p className="text-blue-600 font-bold uppercase text-[8px] md:text-[10px] tracking-[0.3em] italic leading-none pb-2">{center?.tagline || "Advanced Laboratory Medicine"}</p>
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-xl md:text-2xl font-[1000] tracking-tighter text-slate-900 uppercase leading-none italic">{center?.name}</h1>
+                                {/* VALIDATION QR */}
+                                <img 
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : "")}`}
+                                    alt="QR"
+                                    className="w-8 h-8 md:w-10 md:h-10 grayscale contrast-125 opacity-70"
+                                />
+                            </div>
+                            <p className="text-blue-600 font-bold uppercase text-[8px] md:text-[9px] tracking-[0.3em] italic leading-none pb-2">{center?.tagline || "Advanced Laboratory Medicine"}</p>
                             <div className="space-y-0.5 text-[8px] md:text-[9px] text-slate-500 font-black uppercase italic pt-1 border-t border-slate-100">
                                 <p className="flex items-center gap-2"><span className="text-blue-600 font-black">Address:</span> {center?.address}</p>
                                 <p className="flex items-center gap-2"><span className="text-blue-600 font-black">Contact:</span> {center?.phone}</p>
@@ -168,24 +176,42 @@ export default function PublicReportPage() {
                     </div>
                 </div>
 
-                {/* 2. Patient Identity Grid */}
-                <div className="border border-slate-200 rounded-2xl overflow-hidden mb-10 bg-slate-50/10">
+                {/* 2. Patient Identity Grid - TWO ROWS */}
+                <div className="border border-slate-200 rounded-xl overflow-hidden mb-8 bg-slate-50/10">
                     <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y divide-slate-200">
-                        <div className="p-4 flex flex-col">
-                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Patient Name</span>
-                            <span className="text-[14px] font-[1000] text-slate-900 uppercase italic leading-tight tracking-tight">{patient.patientName}</span>
+                        {/* Row 1 */}
+                        <div className="p-3 flex flex-col">
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Patient Name</span>
+                            <span className="text-[12px] font-[1000] text-slate-900 uppercase italic tracking-tight">{patient.patientName}</span>
                         </div>
-                        <div className="p-4 flex flex-col">
-                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Contact / Phone</span>
-                            <span className="text-[11px] font-black text-slate-900 uppercase italic leading-tight">{patient.phone || "---"}</span>
+                        <div className="p-3 flex flex-col">
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Contact / Phone</span>
+                            <span className="text-[10px] font-black text-slate-900 uppercase italic">{patient.phone || "---"}</span>
                         </div>
-                        <div className="p-4 flex flex-col">
-                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Age / Gender</span>
-                            <span className="text-[11px] font-black text-slate-900 uppercase italic leading-tight">{patient.age}Y / {patient.gender}</span>
+                        <div className="p-3 flex flex-col">
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Age / Gender</span>
+                            <span className="text-[10px] font-black text-slate-900 uppercase italic">{patient.age}Y / {patient.gender}</span>
                         </div>
-                        <div className="p-4 flex flex-col">
-                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Specimen ID</span>
-                            <span className="text-[12px] font-black text-blue-600 uppercase tracking-tighter leading-tight italic">{patient.barcode || "#ONLINE"}</span>
+                        <div className="p-3 flex flex-col">
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Specimen ID</span>
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter italic">{patient.barcode || "#ONLINE"}</span>
+                        </div>
+                        {/* Row 2 */}
+                        <div className="p-3 flex flex-col">
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Ref By Dr.</span>
+                            <span className="text-[10px] font-black text-blue-600 uppercase italic">{patient.referralName || "Self Consultant"}</span>
+                        </div>
+                        <div className="p-3 flex flex-col">
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Sample Date</span>
+                            <span className="text-[10px] font-black text-slate-900 uppercase italic leading-none">
+                                {patient.bookingDate ? new Date(patient.bookingDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '---'}
+                            </span>
+                        </div>
+                        <div className="p-3 flex flex-col md:col-span-2">
+                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Report Date</span>
+                            <span className="text-[10px] font-black text-slate-900 uppercase italic leading-none">
+                                {report.updatedAt ? new Date(report.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '---'}
+                            </span>
                         </div>
                     </div>
                 </div>
