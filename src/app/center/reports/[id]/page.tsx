@@ -228,12 +228,13 @@ export default function PrintReportPage() {
                                         <div 
                                             key={idx} 
                                             className={cn(
-                                                "px-2 pb-8 break-inside-avoid",
+                                                "px-2 pb-12 break-inside-avoid",
                                                 idx > 0 && "print:[page-break-before:always]"
                                             )}
                                         >
-                                            <div className="bg-slate-900 text-white px-4 py-2 rounded-sm mb-4 print:mb-2 text-[11px] font-black uppercase tracking-[0.2em]">
-                                                {test.testId?.name}
+                                            <div className="bg-slate-900 text-white px-4 py-2 rounded-sm mb-4 print:mb-2 text-[11px] font-black uppercase tracking-[0.2em] flex justify-between items-center">
+                                                <span>{test.testId?.name}</span>
+                                                <span className="text-[8px] opacity-40">Section ID: {idx + 1}</span>
                                             </div>
 
                                             <div className="overflow-x-auto print:overflow-visible">
@@ -255,7 +256,7 @@ export default function PrintReportPage() {
                                                                 <td className="py-2 text-center text-[13px] font-[900] text-slate-900 tracking-tighter">
                                                                     {res.value || "---"}
                                                                 </td>
-                                                                <td className="py-2 text-center text-[10px] font-bold text-slate-400">
+                                                                <td className="py-2 text-center text-[10px] font-bold text-slate-400 uppercase">
                                                                     {res.unit}
                                                                 </td>
                                                                 <td className="py-2 text-right text-[10px] font-bold text-slate-600 tracking-tighter whitespace-nowrap">
@@ -267,41 +268,41 @@ export default function PrintReportPage() {
                                                 </table>
                                             </div>
 
-                                            <div className="mt-3 border-l-2 border-blue-600 pl-3 py-0.5 break-inside-avoid italic">
+                                            <div className="mt-3 border-l-2 border-blue-600 pl-3 py-1 break-inside-avoid italic mb-8">
                                                 <p className="text-[8px] font-black text-slate-400 leading-tight uppercase tracking-wide">
                                                     Interpretation: Clinical findings must be correlated. All laboratory reports have technical limitations.
                                                 </p>
                                             </div>
+
+                                            {/* Signatures FOR EACH TEST */}
+                                            {center?.showFooter !== false && (
+                                                <div className="pt-10 mb-2 mt-8 border-t-[1.5pt] border-slate-900/10">
+                                                    <div className="grid grid-cols-2 gap-12 px-8">
+                                                        {/* Left Signatory */}
+                                                        <div className="text-center">
+                                                            <div className="h-12 flex items-center justify-center mb-1">
+                                                                <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Technician Sign</p>
+                                                            </div>
+                                                            <div className="w-full h-px bg-slate-100 mb-2" />
+                                                            <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">Pathology Head</p>
+                                                            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Senior Lab Specialist</p>
+                                                        </div>
+
+                                                        {/* Right Signatory */}
+                                                        <div className="text-center">
+                                                            <div className="h-12 flex items-center justify-center mb-1">
+                                                                <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Authorized Pathologist</p>
+                                                            </div>
+                                                            <div className="w-full h-px bg-slate-900 mb-2" />
+                                                            <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">MD Pathologist (Consultant)</p>
+                                                            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Council Reg: MC-12344/5</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
-
-                                {/* 4. Signatures (MOVED HERE TO PREVENT PAGE 1 GAPS) */}
-                                {center?.showFooter !== false && (
-                                    <div className="pt-10 mb-8 report-section border-t border-slate-200 mt-12">
-                                        <div className="grid grid-cols-2 gap-12 px-8">
-                                            {/* Left Signatory */}
-                                            <div className="text-center">
-                                                <div className="h-12 flex items-center justify-center mb-1">
-                                                    <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Technician Sign</p>
-                                                </div>
-                                                <div className="w-full h-px bg-slate-100 mb-2" />
-                                                <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">Pathology Head</p>
-                                                <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Senior Lab Specialist</p>
-                                            </div>
-
-                                            {/* Right Signatory */}
-                                            <div className="text-center">
-                                                <div className="h-12 flex items-center justify-center mb-1">
-                                                    <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Authorized Pathologist</p>
-                                                </div>
-                                                <div className="w-full h-px bg-slate-900 mb-2" />
-                                                <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">MD Pathologist (Consultant)</p>
-                                                <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Council Reg: MC-12344/5</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
                             </td>
                         </tr>
                     </tbody>
@@ -310,14 +311,14 @@ export default function PrintReportPage() {
                             <td>
                                 <div className="print-footer-spacer" />
                                 {center?.showFooter !== false && (
-                                    <div className="pt-2 border-t border-slate-100 pb-2 flex justify-between items-center px-4 opacity-40 text-slate-500">
+                                    <div className="pt-1 border-t border-slate-100 pb-2 flex justify-between items-center px-4 opacity-40 text-slate-500">
                                         <div className="flex items-center gap-2">
                                             <ShieldCheck size={10} className="text-blue-600" />
-                                            <span className="text-[6.5px] font-black uppercase tracking-[0.2em] italic whitespace-nowrap">
+                                            <span className="text-[6px] font-black uppercase tracking-[0.2em] italic whitespace-nowrap">
                                                 {center?.footerText || "Diagnostic Intelligence Grid • Secure HIPAA Compliant Transmission"}
                                             </span>
                                         </div>
-                                        <p className="text-[6.5px] font-black uppercase tracking-tighter italic whitespace-nowrap">Diagnostic Transmission • Node Verified</p>
+                                        <p className="text-[6px] font-black uppercase tracking-tighter italic whitespace-nowrap">Diagnostic Transmission • Node Verified</p>
                                     </div>
                                 )}
                             </td>
