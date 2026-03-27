@@ -275,28 +275,22 @@ export default function PrintReportPage() {
                                             </div>
 
                                             {/* Signatures FOR EACH TEST */}
-                                            {center?.showFooter !== false && (
-                                                <div className="pt-10 mb-2 mt-8 border-t-[1.5pt] border-slate-900/10">
-                                                    <div className="grid grid-cols-2 gap-12 px-8">
-                                                        {/* Left Signatory */}
-                                                        <div className="text-center">
-                                                            <div className="h-12 flex items-center justify-center mb-1">
-                                                                <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Technician Sign</p>
+                                            {center?.signatories?.length > 0 && (
+                                                <div className="pt-8 mb-2 mt-8 border-t-[1.5pt] border-slate-900/10">
+                                                    <div className={cn(
+                                                        "grid gap-16 px-12",
+                                                        center.signatories.length > 1 ? "grid-cols-2" : "max-w-[300px] mx-auto grid-cols-1"
+                                                    )}>
+                                                        {center.signatories.map((sig: any, sIdx: number) => (
+                                                            <div key={sIdx} className="text-center">
+                                                                <div className="h-10 flex items-center justify-center mb-1">
+                                                                    <p className="font-serif italic text-slate-300 text-[9px] opacity-40 uppercase tracking-[0.3em] font-black">Digitally Verified</p>
+                                                                </div>
+                                                                <div className="w-full h-px bg-slate-900 mb-2 opacity-20" />
+                                                                <p className="text-[11.5px] font-black uppercase text-slate-900 leading-none mb-1 italic tracking-tight">{sig.name}</p>
+                                                                <p className="text-[7.5px] font-bold text-slate-500 uppercase tracking-tighter italic leading-none">{sig.designation}</p>
                                                             </div>
-                                                            <div className="w-full h-px bg-slate-100 mb-2" />
-                                                            <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">Pathology Head</p>
-                                                            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Senior Lab Specialist</p>
-                                                        </div>
-
-                                                        {/* Right Signatory */}
-                                                        <div className="text-center">
-                                                            <div className="h-12 flex items-center justify-center mb-1">
-                                                                <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Authorized Pathologist</p>
-                                                            </div>
-                                                            <div className="w-full h-px bg-slate-900 mb-2" />
-                                                            <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">MD Pathologist (Consultant)</p>
-                                                            <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Council Reg: MC-12344/5</p>
-                                                        </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             )}
