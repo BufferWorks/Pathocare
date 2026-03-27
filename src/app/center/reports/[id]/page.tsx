@@ -180,22 +180,28 @@ export default function PrintReportPage() {
                                     <table className="w-full text-left border-collapse">
                                         <tbody>
                                             <tr className="border-b border-slate-200">
-                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                                <td className="p-2.5 w-1/4 border-r border-slate-200">
                                                     <div className="flex flex-col text-slate-900">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Patient Name</span>
                                                         <span className="text-[12px] font-[900] uppercase italic tracking-tight leading-none">{patient.patientName}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-2.5 w-1/3 border-r border-slate-200">
+                                                <td className="p-2.5 w-1/4 border-r border-slate-200">
                                                     <div className="flex flex-col text-slate-900">
-                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Age / Gender</span>
-                                                        <span className="text-[10px] font-black uppercase italic">{patient.age}Y / {patient.gender}</span>
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Contact / Phone</span>
+                                                        <span className="text-[10px] font-black uppercase italic leading-none">{patient.phone || "---"}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-2.5 w-1/3">
+                                                <td className="p-2.5 w-1/4 border-r border-slate-200">
+                                                    <div className="flex flex-col text-slate-900">
+                                                        <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Age / Gender</span>
+                                                        <span className="text-[10px] font-black uppercase italic leading-none">{patient.age}Y / {patient.gender}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-2.5 w-1/4">
                                                     <div className="flex flex-col text-slate-900">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Specimen ID</span>
-                                                        <span className="text-[11px] font-black uppercase tracking-tighter text-blue-600 italic">{patient.barcode || "#NODE-REF"}</span>
+                                                        <span className="text-[11px] font-black uppercase tracking-tighter text-blue-600 italic leading-none">{patient.barcode || "#NODE-REF"}</span>
                                                     </div>
                                                 </td>
                                             </tr>
