@@ -232,12 +232,12 @@ export default function PrintReportPage() {
                                                 idx > 0 && "print:[page-break-before:always]"
                                             )}
                                         >
-                                            <div className="bg-slate-900 text-white px-4 py-2 flex justify-between items-center rounded-sm mb-4 print:mb-2">
-                                                <h2 className="text-[11px] font-black uppercase tracking-[0.2em]">{test.testId?.name}</h2>
+                                            <div className="bg-slate-900 text-white px-4 py-2 rounded-sm mb-4 print:mb-2 text-[11px] font-black uppercase tracking-[0.2em]">
+                                                {test.testId?.name}
                                             </div>
 
                                             <div className="overflow-x-auto print:overflow-visible">
-                                                <table className="w-full text-left">
+                                                <table className="w-full text-left border-collapse">
                                                     <thead>
                                                         <tr className="border-b-2 border-slate-900">
                                                             <th className="py-2 text-[9px] font-black uppercase text-slate-600 tracking-wider">Investigation</th>
@@ -246,25 +246,20 @@ export default function PrintReportPage() {
                                                             <th className="py-2 text-right text-[9px] font-black uppercase text-slate-600 tracking-wider">Ref. Interval</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-slate-100">
+                                                    <tbody className="divide-y divide-slate-100 italic">
                                                         {(test.parameterResults || []).filter((p: any) => p.value).map((res: any, pIdx: number) => (
                                                             <tr key={pIdx} className="result-row group break-inside-avoid">
-                                                                <td className="py-2.5 text-[11px] font-black text-slate-900 uppercase tracking-tight leading-tight italic">
+                                                                <td className="py-2 text-[11px] font-black text-slate-900 uppercase tracking-tight leading-tight">
                                                                     {res.name}
                                                                 </td>
-                                                                <td className="py-2.5 text-center text-[13px] font-[900] text-slate-900 tracking-tighter italic">
-                                                                    <span>{res.value || "---"}</span>
+                                                                <td className="py-2 text-center text-[13px] font-[900] text-slate-900 tracking-tighter">
+                                                                    {res.value || "---"}
                                                                 </td>
-                                                                <td className="py-2.5 text-center text-[10px] font-bold text-slate-400 italic uppercase">
+                                                                <td className="py-2 text-center text-[10px] font-bold text-slate-400">
                                                                     {res.unit}
                                                                 </td>
-                                                                <td className="py-2.5 text-right text-[10px] font-bold text-slate-600 tracking-tighter italic whitespace-nowrap">
-                                                                    <span className={cn(
-                                                                        "px-1.5 py-0.5 rounded-md",
-                                                                        res.value && res.normalRange ? "bg-slate-50" : ""
-                                                                    )}>
-                                                                        {res.normalRange}
-                                                                    </span>
+                                                                <td className="py-2 text-right text-[10px] font-bold text-slate-600 tracking-tighter whitespace-nowrap">
+                                                                    {res.normalRange}
                                                                 </td>
                                                             </tr>
                                                         ))}
@@ -272,14 +267,41 @@ export default function PrintReportPage() {
                                                 </table>
                                             </div>
 
-                                            <div className="mt-3 border-l-2 border-blue-600 pl-3 py-0.5 break-inside-avoid">
-                                                <p className="text-[8px] font-black text-slate-400 leading-tight uppercase italic tracking-wide">
+                                            <div className="mt-3 border-l-2 border-blue-600 pl-3 py-0.5 break-inside-avoid italic">
+                                                <p className="text-[8px] font-black text-slate-400 leading-tight uppercase tracking-wide">
                                                     Interpretation: Clinical findings must be correlated. All laboratory reports have technical limitations.
                                                 </p>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* 4. Signatures (MOVED HERE TO PREVENT PAGE 1 GAPS) */}
+                                {center?.showFooter !== false && (
+                                    <div className="pt-10 mb-8 report-section border-t border-slate-200 mt-12">
+                                        <div className="grid grid-cols-2 gap-12 px-8">
+                                            {/* Left Signatory */}
+                                            <div className="text-center">
+                                                <div className="h-12 flex items-center justify-center mb-1">
+                                                    <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Technician Sign</p>
+                                                </div>
+                                                <div className="w-full h-px bg-slate-100 mb-2" />
+                                                <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">Pathology Head</p>
+                                                <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Senior Lab Specialist</p>
+                                            </div>
+
+                                            {/* Right Signatory */}
+                                            <div className="text-center">
+                                                <div className="h-12 flex items-center justify-center mb-1">
+                                                    <p className="font-serif italic text-slate-300 text-[10px] opacity-40 uppercase tracking-widest">Authorized Pathologist</p>
+                                                </div>
+                                                <div className="w-full h-px bg-slate-900 mb-2" />
+                                                <p className="text-[11px] font-black uppercase text-slate-900 leading-none mb-0.5 italic">MD Pathologist (Consultant)</p>
+                                                <p className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter italic">Council Reg: MC-12344/5</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </td>
                         </tr>
                     </tbody>
@@ -288,62 +310,14 @@ export default function PrintReportPage() {
                             <td>
                                 <div className="print-footer-spacer" />
                                 {center?.showFooter !== false && (
-                                    <div className="pt-6 border-t-[2pt] border-slate-900 mb-4 report-section">
-                                        <div className="grid grid-cols-3 items-end gap-8 px-4 mb-8">
-                                            {/* Verification Node */}
-                                            <div className="flex flex-col items-center gap-2">
-                                                <div className="w-20 h-20 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center p-2 relative group grayscale">
-                                                    <ShieldCheck className="text-slate-300 opacity-40" size={40} />
-                                                </div>
-                                                <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest text-center leading-tight">Authentic Secure<br />Report Verification</p>
-                                            </div>
-
-                                            {/* Signatures */}
-                                            {center?.signatories?.length > 0 ? (
-                                                <div className="col-span-2 grid grid-cols-2 gap-8">
-                                                    {center.signatories.map((sig: any, sIdx: number) => (
-                                                        <div key={sIdx} className="text-center">
-                                                            <div className="h-10 flex items-center justify-center mb-1">
-                                                                <p className="font-serif italic text-slate-300 text-[11px] opacity-40">Digitally Verified</p>
-                                                            </div>
-                                                            <div className="w-full h-px bg-slate-200 mb-2" />
-                                                            <p className="text-[10px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-0.5">{sig.name}</p>
-                                                            <p className="text-[7px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">{sig.designation}</p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <div className="text-center">
-                                                        <div className="h-10 flex items-center justify-center mb-1">
-                                                            <p className="font-serif italic text-slate-300 text-[11px] opacity-40">Digitally Verified</p>
-                                                        </div>
-                                                        <div className="w-full h-px bg-slate-200 mb-2" />
-                                                        <p className="text-[10px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-0.5">Senior Lab Specialist</p>
-                                                        <p className="text-[7px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">Verification Node ID: 4521/TR</p>
-                                                    </div>
-
-                                                    <div className="text-center">
-                                                        <div className="h-10 flex items-center justify-center mb-1">
-                                                            <p className="font-serif italic text-slate-300 text-[11px] opacity-40">Authorized Signatory</p>
-                                                        </div>
-                                                        <div className="w-full h-px bg-slate-900 mb-2" />
-                                                        <p className="text-[10px] font-black uppercase text-slate-900 tracking-tighter leading-none mb-0.5">MD Pathologist (Consultant)</p>
-                                                        <p className="text-[7px] font-bold text-slate-400 uppercase italic tracking-tighter leading-none">Council Reg: MC-12344/5</p>
-                                                    </div>
-                                                </>
-                                            )}
+                                    <div className="pt-2 border-t border-slate-100 pb-2 flex justify-between items-center px-4 opacity-40 text-slate-500">
+                                        <div className="flex items-center gap-2">
+                                            <ShieldCheck size={10} className="text-blue-600" />
+                                            <span className="text-[6.5px] font-black uppercase tracking-[0.2em] italic whitespace-nowrap">
+                                                {center?.footerText || "Diagnostic Intelligence Grid • Secure HIPAA Compliant Transmission"}
+                                            </span>
                                         </div>
-
-                                        <div className="flex justify-between items-center px-4 opacity-40 text-slate-500">
-                                            <div className="flex items-center gap-2">
-                                                <ShieldCheck size={12} className="text-blue-600 opacity-60" />
-                                                <span className="text-[7.5px] font-black uppercase tracking-[0.2em] italic leading-none whitespace-nowrap">
-                                                    {center?.footerText || "Diagnostic Intelligence Grid • Secure HIPAA Compliant Transmission"}
-                                                </span>
-                                            </div>
-                                            <p className="text-[8px] font-black uppercase tracking-tighter italic leading-none whitespace-nowrap">Diagnostic Transmission • Node Verified</p>
-                                        </div>
+                                        <p className="text-[6.5px] font-black uppercase tracking-tighter italic whitespace-nowrap">Diagnostic Transmission • Node Verified</p>
                                     </div>
                                 )}
                             </td>
