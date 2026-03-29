@@ -269,7 +269,9 @@ export default function PrintReportPage() {
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-100 italic">
-                                                        {(test.parameterResults || []).filter((p: any) => p.value).map((res: any, pIdx: number) => (
+                                                        {(test.parameterResults || [])
+                                                            .filter((p: any) => p.value && !["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP", "SECTION ID"].includes(p.name?.toUpperCase()))
+                                                            .map((res: any, pIdx: number) => (
                                                             <tr key={pIdx} className="result-row group break-inside-avoid">
                                                                 <td className="py-2 text-[11px] font-black text-slate-900 uppercase tracking-tight leading-tight">
                                                                     {res.name}

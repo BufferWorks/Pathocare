@@ -236,7 +236,9 @@ export default function PublicReportPage() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
-                                        {(test.parameterResults || []).map((res: any, pIdx: number) => (
+                                        {(test.parameterResults || [])
+                                            .filter((res: any) => res.value && !["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP", "SECTION ID"].includes(res.name?.toUpperCase()))
+                                            .map((res: any, pIdx: number) => (
                                             <tr key={pIdx}>
                                                 <td className="py-3.5 text-[12px] md:text-[13px] font-black text-slate-950 uppercase italic tracking-tighter">{res.name}</td>
                                                 <td className="py-3.5 text-center">
