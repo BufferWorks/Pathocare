@@ -105,7 +105,7 @@ export default function PrintReportPage() {
                         <ChevronLeft size={18} /> Exit
                     </Link>
                     <div className="w-px h-6 bg-slate-200" />
-                    <button 
+                    <button
                         onClick={() => window.location.reload()}
                         className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold uppercase text-[10px] tracking-widest transition-all"
                     >
@@ -197,7 +197,7 @@ export default function PrintReportPage() {
                                                     </div>
                                                 </td>
                                             </tr>
-                                             <tr>
+                                            <tr>
                                                 <td className="p-2.5 w-1/4 border-r border-slate-200">
                                                     <div className="flex flex-col text-slate-900">
                                                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Ref By Dr.</span>
@@ -224,7 +224,7 @@ export default function PrintReportPage() {
                                                     {/* PROPER PLACE FOR QR CODE */}
                                                     {report?.shareToken && (
                                                         <div className="flex flex-col items-center justify-center gap-0.5">
-                                                            <img 
+                                                            <img
                                                                 src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://pathocore.bufferworks.in/public/report/${report.shareToken}`)}`}
                                                                 alt="QR"
                                                                 className="w-8 h-8 grayscale contrast-125 opacity-70"
@@ -246,8 +246,8 @@ export default function PrintReportPage() {
                                 {/* 3. Investigation Results */}
                                 <div className="space-y-0 mb-8">
                                     {(report?.results || []).map((test: any, idx: number) => (
-                                        <div 
-                                            key={idx} 
+                                        <div
+                                            key={idx}
                                             className={cn(
                                                 "px-2 pb-12 break-inside-avoid",
                                                 idx > 0 && "print:[page-break-before:always]"
@@ -270,7 +270,7 @@ export default function PrintReportPage() {
                                                     </thead>
                                                     <tbody className="divide-y divide-slate-100 italic">
                                                         {(test.parameterResults || [])
-                                                            .filter((p: any) => p.value && !["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP", "SECTION ID"].includes(p.name?.toUpperCase()))
+                                                            .filter((p: any) => p.value && !["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP", "SECTION ID", "REF GENERAL"].includes(p.name?.toUpperCase()))
                                                             .map((res: any, pIdx: number) => (
                                                             <tr key={pIdx} className="result-row group break-inside-avoid">
                                                                 <td className="py-2 text-[11px] font-black text-slate-900 uppercase tracking-tight leading-tight">
@@ -280,16 +280,29 @@ export default function PrintReportPage() {
                                                                     {res.value || "---"}
                                                                 </td>
                                                                 <td className="py-2 text-center text-[10px] font-bold text-slate-400 uppercase">
-                                                                    {res.unit}
+                                                                    {res.unit || "---"}
                                                                 </td>
-                                                                <td className="py-2 text-right text-[10px] font-bold text-slate-600 tracking-tighter whitespace-nowrap">
-                                                                    {res.normalRange}
+                                                                <td className="py-2 text-right text-[10px] font-bold text-slate-600 tracking-tighter">
+                                                                    {res.normalRange || "---"}
                                                                 </td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
                                                 </table>
                                             </div>
+
+                                            {/* TECHNICAL DATA ROW - Subtle footer for machine metadata */}
+                                            {test.parameterResults?.some((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase())) && (
+                                                <div className="mt-1 flex gap-4 px-2 opacity-30">
+                                                    {(test.parameterResults || [])
+                                                        .filter((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()))
+                                                        .map((p: any, pIdx: number) => (
+                                                            <span key={pIdx} className="text-[7px] font-black uppercase tracking-widest italic">
+                                                                {p.name}: {p.value}
+                                                            </span>
+                                                        ))}
+                                                </div>
+                                            )}
 
                                             <div className="mt-3 border-l-2 border-blue-600 pl-3 py-1 break-inside-avoid italic mb-8">
                                                 <p className="text-[8px] font-black text-slate-400 leading-tight uppercase tracking-wide">

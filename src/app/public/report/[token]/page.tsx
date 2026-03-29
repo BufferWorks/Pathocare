@@ -148,7 +148,7 @@ export default function PublicReportPage() {
 
             {/* The Report (Mimicking Printed Version) */}
             <div className="w-full max-w-[850px] bg-white shadow-2xl rounded-sm border border-slate-100 overflow-hidden print:shadow-none print:border-none p-4 md:p-12 lg:p-16">
-                
+
                 {/* 1. Header Area */}
                 <div className="flex justify-between items-start border-b-[2.5pt] border-slate-900/10 pb-6 mb-8">
                     <div className="flex gap-4 md:gap-8 items-start">
@@ -161,7 +161,7 @@ export default function PublicReportPage() {
                             <div className="flex items-center gap-3">
                                 <h1 className="text-xl md:text-2xl font-[1000] tracking-tighter text-slate-900 uppercase leading-none italic">{center?.name}</h1>
                                 {/* VALIDATION QR */}
-                                <img 
+                                <img
                                     src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : "")}`}
                                     alt="QR"
                                     className="w-8 h-8 md:w-10 md:h-10 grayscale contrast-125 opacity-70"
@@ -237,7 +237,7 @@ export default function PublicReportPage() {
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
                                         {(test.parameterResults || [])
-                                            .filter((res: any) => res.value && !["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP", "SECTION ID"].includes(res.name?.toUpperCase()))
+                                            .filter((res: any) => res.value && !["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP", "SECTION ID", "REF GENERAL"].includes(res.name?.toUpperCase()))
                                             .map((res: any, pIdx: number) => (
                                             <tr key={pIdx}>
                                                 <td className="py-3.5 text-[12px] md:text-[13px] font-black text-slate-950 uppercase italic tracking-tighter">{res.name}</td>
@@ -256,6 +256,19 @@ export default function PublicReportPage() {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* TECHNICAL DATA ROW - Public View */}
+                            {test.parameterResults?.some((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase())) && (
+                                <div className="mt-1 flex flex-wrap gap-x-4 px-1 opacity-20">
+                                    {(test.parameterResults || [])
+                                        .filter((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()))
+                                        .map((p: any, pIdx: number) => (
+                                            <span key={pIdx} className="text-[7px] font-black uppercase tracking-tighter italic whitespace-nowrap">
+                                                {p.name}: {p.value}
+                                            </span>
+                                        ))}
+                                </div>
+                            )}
 
                             {/* Clinical Footer for Test */}
                             <div className="mt-2 border-l-[3pt] border-blue-600 pl-4 py-2 bg-slate-50/50 rounded-r-xl">
