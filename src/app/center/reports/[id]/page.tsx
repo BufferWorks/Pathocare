@@ -234,6 +234,26 @@ export default function PrintReportPage() {
                                                     )}
                                                 </td>
                                             </tr>
+                                            {/* ROW 3: TECHNICAL MACHINE METADATA (SUBTLE) */}
+                                            {report?.results?.some((r: any) => r.parameterResults?.some((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()))) && (
+                                                <tr className="border-t border-slate-200 bg-slate-50/10">
+                                                    {(report.results.flatMap((r: any) => r.parameterResults || [])
+                                                        .filter((p: any, i: number, self: any[]) => 
+                                                            ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()) && 
+                                                            self.findIndex(x => x.name?.toUpperCase() === p.name?.toUpperCase()) === i
+                                                        )
+                                                        .slice(0, 4)
+                                                        .map((p: any, pIdx: number) => (
+                                                            <td key={pIdx} className="p-2 border-r border-slate-200 last:border-r-0">
+                                                                <div className="flex flex-col opacity-60">
+                                                                    <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest">{p.name}</span>
+                                                                    <span className="text-[9px] font-black text-slate-900 uppercase italic leading-none">{p.value}</span>
+                                                                </div>
+                                                            </td>
+                                                        ))
+                                                    )}
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -290,19 +310,6 @@ export default function PrintReportPage() {
                                                     </tbody>
                                                 </table>
                                             </div>
-
-                                            {/* TECHNICAL DATA ROW - Subtle footer for machine metadata */}
-                                            {test.parameterResults?.some((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase())) && (
-                                                <div className="mt-1 flex gap-4 px-2 opacity-30">
-                                                    {(test.parameterResults || [])
-                                                        .filter((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()))
-                                                        .map((p: any, pIdx: number) => (
-                                                            <span key={pIdx} className="text-[7px] font-black uppercase tracking-widest italic">
-                                                                {p.name}: {p.value}
-                                                            </span>
-                                                        ))}
-                                                </div>
-                                            )}
 
                                             <div className="mt-3 border-l-2 border-blue-600 pl-3 py-1 break-inside-avoid italic mb-8">
                                                 <p className="text-[8px] font-black text-slate-400 leading-tight uppercase tracking-wide">

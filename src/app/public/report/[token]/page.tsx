@@ -213,6 +213,24 @@ export default function PublicReportPage() {
                                 {report.updatedAt ? new Date(report.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '---'}
                             </span>
                         </div>
+                        {/* ROW 3: TECHNICAL MACHINE METADATA (SUBTLE) */}
+                        {report?.results?.some((r: any) => r.parameterResults?.some((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()))) && (
+                        <div className="col-span-2 md:col-span-4 grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-200 border-t border-slate-200 bg-slate-50/10">
+                            {(report.results.flatMap((r: any) => r.parameterResults || [])
+                                .filter((p: any, i: number, self: any[]) => 
+                                    ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()) && 
+                                    self.findIndex(x => x.name?.toUpperCase() === p.name?.toUpperCase()) === i
+                                )
+                                .slice(0, 4)
+                                .map((p: any, pIdx: number) => (
+                                    <div key={pIdx} className="p-2 flex flex-col opacity-60">
+                                        <span className="text-[6px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">{p.name}</span>
+                                        <span className="text-[8px] font-black text-slate-900 uppercase italic leading-none">{p.value}</span>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        )}
                     </div>
                 </div>
 
@@ -257,18 +275,7 @@ export default function PublicReportPage() {
                                 </table>
                             </div>
 
-                            {/* TECHNICAL DATA ROW - Public View */}
-                            {test.parameterResults?.some((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase())) && (
-                                <div className="mt-1 flex flex-wrap gap-x-4 px-1 opacity-20">
-                                    {(test.parameterResults || [])
-                                        .filter((p: any) => ["TAKE MODE", "BLOOD MODE", "TEST MODE", "REF GROUP"].includes(p.name?.toUpperCase()))
-                                        .map((p: any, pIdx: number) => (
-                                            <span key={pIdx} className="text-[7px] font-black uppercase tracking-tighter italic whitespace-nowrap">
-                                                {p.name}: {p.value}
-                                            </span>
-                                        ))}
-                                </div>
-                            )}
+                            {/* Interpretation Footer */}
 
                             {/* Clinical Footer for Test */}
                             <div className="mt-2 border-l-[3pt] border-blue-600 pl-4 py-2 bg-slate-50/50 rounded-r-xl">
